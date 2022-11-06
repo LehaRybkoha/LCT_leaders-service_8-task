@@ -8,16 +8,16 @@ const navs = [
     icon: IconHome,
     to: '/',
   },
-  {
-    name: 'Настройка алгоритма',
-    icon: IconSetup,
-    to: '/setup',
-  },
-  {
-    name: 'Сотрудники',
-    icon: IconTeam,
-    to: '/team',
-  },
+  // {
+  //   name: 'Настройка алгоритма',
+  //   icon: IconSetup,
+  //   to: '/setup',
+  // },
+  // {
+  //   name: 'Сотрудники',
+  //   icon: IconTeam,
+  //   to: '/team',
+  // },
 ]
 </script>
 
