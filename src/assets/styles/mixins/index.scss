@@ -13,3 +13,9 @@
   font-family: $font-family;
   text-transform: $text-transform;
 }
+
+@mixin deep($name: 'plate-wrapper') {
+  &:deep(#{$name}) {
+    @content;
+  }
+}

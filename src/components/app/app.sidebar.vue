@@ -23,6 +23,9 @@ const navs = [
 
 <template>
   <aside class="sidebar">
+    <div class="sidebar__header">
+      <h1 class="sidebar__title">YAMA _TM</h1>
+    </div>
     <nav class="nav">
       <div class="nav__item" v-for="(nav, idx) of navs" :key="idx">
         <router-link :to="nav.to" class="nav__link">
@@ -42,8 +45,15 @@ const navs = [
   width: 100%;
   background-color: $primary-white;
   box-shadow: 0px 10px 50px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
+  &__header {
+    margin-bottom: 100px;
+    padding: 29px 0;
+    border-bottom: 1px solid rgba(160, 160, 160, 0.4);
+  }
+  &__title {
+    @include tg-h5-bold;
+    text-align: center;
+  }
 }
 
 .nav {
@@ -51,6 +61,7 @@ const navs = [
     display: flex;
     align-items: center;
     height: 72px;
+    white-space: nowrap;
   }
   &__icon {
     margin-right: 16px;
