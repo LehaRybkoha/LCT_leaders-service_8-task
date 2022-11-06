@@ -9,5 +9,3 @@ npm run dev или pnpm run dev или yarn dev
 # PROD
 
 npm run build или pnpm run build или yarn build
-
-# hint
