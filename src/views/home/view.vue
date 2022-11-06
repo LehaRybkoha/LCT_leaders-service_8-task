@@ -68,9 +68,12 @@ const changeFiles = async (e) => {
 
 const makeFormData = () => {
   console.log(store.$state.username)
+  const username = JSON.parse(localStorage.getItem('username') ?? null)
+  const password = JSON.parse(localStorage.getItem('password') ?? null)
+
   const user_data = {
-    username: store.$state.username,
-    password: store.$state.password,
+    username: username ?? store.$state.username,
+    password: password ?? store.$state.password,
     level: store.$state.level,
   }
 

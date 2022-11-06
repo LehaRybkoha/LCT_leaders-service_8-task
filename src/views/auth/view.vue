@@ -18,6 +18,7 @@ const form = ref({
 })
 
 const makeFormData = () => {
+  console.log(form.value.username)
   const user_data = {
     username: form.value.username,
     password: form.value.password,
@@ -40,11 +41,14 @@ const registerUser = async () => {
   const { username, password } = form.value
   await register(username, password, 1)
 
-  const { access_token, user_id } = await get_token(makeFormData())
-  store.$state.access_token = access_token
-  store.$state.user_id = user_id
+  const d = await get_token(makeFormData())
+  store.$state.access_token = d.access_token
+  store.$state.user_id = d.user_id
   store.$state.username = form.value.username
   store.$state.password = form.value.password
+
+  localStorage.setItem('username', JSON.stringify(form.value.username))
+  localStorage.setItem('password', JSON.stringify(form.value.password))
 
   if (store.$state.access_token && store.$state.user_id) {
     router.push('/')
@@ -57,6 +61,9 @@ const loginUser = async () => {
   store.$state.user_id = user_id
   store.$state.username = form.value.username
   store.$state.password = form.value.password
+
+  localStorage.setItem('username', JSON.stringify(form.value.username))
+  localStorage.setItem('password', JSON.stringify(form.value.password))
 
   if (store.$state.access_token && store.$state.user_id) {
     router.push('/')
