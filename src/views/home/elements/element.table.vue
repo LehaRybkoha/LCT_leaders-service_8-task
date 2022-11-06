@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { ElementRowLines } from '~/views/home/elements'
 import { patch_smeta } from '~/api/route.home'
 import { useStore } from '~/stores/stores.main'
+import { SERVER_ENDPOINT } from '~/api/_global'
 
 const store = useStore()
 
@@ -22,7 +23,7 @@ const props = defineProps({
 
 const patches = ref([])
 
-const emit = defineEmits(['open_category', 'submit'])
+const emit = defineEmits(['open_category', 'submit', 'add-more'])
 
 const selectItem = (item) => {
   emit('open_category', item)
@@ -38,7 +39,7 @@ const createPatch = (line_number, spgz_id) => {
 const submitItems = async () => {
   try {
     let filename = ''
-    const url = `http://127.0.0.1:3030/smeta/patch_smeta/${store.$state.user_id}`
+    const url = `${SERVER_ENDPOINT}/smeta/patch_smeta/${store.$state.user_id}`
     fetch(url, {
       headers: {
         Authorization: 'Bearer ' + store.$state.access_token,
@@ -79,6 +80,10 @@ const changeItem = (line_number, spgz_id, idx) => {
   patches.value[idx] = createPatch(line_number, spgz_id)
 }
 
+const addMore = () => {
+  emit('add-more')
+}
+
 onMounted(() => {
   const table = [...props.table.items]
 
@@ -104,6 +109,12 @@ onMounted(() => {
         v-if="type === 'lines'"
         class="table__button"
         >Подтвердить</common-button
+      >
+      <common-button
+        @click="addMore"
+        v-else-if="type === 'categories'"
+        class="table__button"
+        >Загрузить новый файл</common-button
       >
     </div>
     <div class="table__content">

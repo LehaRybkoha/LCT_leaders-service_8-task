@@ -5,6 +5,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { upload_smeta } from '~/api/route.home'
 import { ElementTable } from '~/views/home/elements'
 
+import { SERVER_ENDPOINT } from '~/api/_global'
+
 import { useStore } from '~/stores/stores.main'
 
 import { get_token, register } from '~/api/route.auth'
@@ -39,7 +41,7 @@ const changeFiles = async (e) => {
 
       //TODO - make as route in api
       let data = await fetch(
-        `http://127.0.0.1:3030/smeta/parse_smeta/${store.$state.user_id}`,
+        `${SERVER_ENDPOINT}/smeta/parse_smeta/${store.$state.user_id}`,
         {
           headers: {
             Authorization: 'Bearer ' + store.$state.access_token,
@@ -96,6 +98,10 @@ const open_category = (category) => {
   title.value = category.name
 }
 
+const addMore = () => {
+  isLoaded.value = false
+}
+
 onMounted(async () => {
   await register('1232111', '123456789', 3)
   const { access_token, user_id } = await get_token(makeFormData())
@@ -119,9 +125,10 @@ onMounted(async () => {
     </div>
     <element-table
       @open_category="open_category"
+      @add-more="addMore"
       class="table-main"
-      :title="title"
       type="categories"
+      :title="title"
       :table="table"
       v-else-if="table && !chosen_cat"
     />

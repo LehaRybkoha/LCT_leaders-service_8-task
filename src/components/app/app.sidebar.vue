@@ -28,7 +28,7 @@ const navs = [
     </div>
     <nav class="nav">
       <div class="nav__item" v-for="(nav, idx) of navs" :key="idx">
-        <router-link :to="nav.to" class="nav__link">
+        <router-link :to="nav.to" class="nav__link" router-link-active="active">
           <icon-wrapper class="nav__icon" width="20" height="20">
             <component :is="nav.icon" class="nav__icon" />
           </icon-wrapper>
@@ -62,6 +62,28 @@ const navs = [
     align-items: center;
     height: 72px;
     white-space: nowrap;
+    color: $primary-grey;
+    transition: all ease 0.2s;
+    padding: 0 16px;
+    &.active {
+      background: linear-gradient(
+        89.95deg,
+        #ece2ff 0.04%,
+        rgba(240, 252, 247, 0) 120.25%
+      );
+      color: $accent-purple;
+      border-left: 3px solid $accent-purple;
+    }
+    border-left: 3px solid transparent;
+    &:hover {
+      background: linear-gradient(
+        89.95deg,
+        #ece2ff 0.04%,
+        rgba(240, 252, 247, 0) 120.25%
+      );
+      color: $accent-purple;
+      border-left: 3px solid $accent-purple;
+    }
   }
   &__icon {
     margin-right: 16px;
@@ -70,22 +92,6 @@ const navs = [
     cursor: pointer;
     @include tg-h6-medium;
     text-align: center;
-    color: $primary-grey;
-    padding: 0 16px;
-    transition: all ease 0.2s;
-    &.active {
-      color: $accent-purple;
-    }
-    border-left: 6px solid transparent;
-    &:hover {
-      background: linear-gradient(
-        89.95deg,
-        #ece2ff 0.04%,
-        rgba(240, 252, 247, 0) 120.25%
-      );
-      color: $accent-purple;
-      border-left: 6px solid $accent-purple;
-    }
   }
 }
 </style>
