@@ -4,12 +4,11 @@ import { CommonButton } from '~/components/common'
 import { useRoute, useRouter } from 'vue-router'
 import { upload_smeta } from '~/api/route.home'
 import { ElementTable } from '~/views/home/elements'
+import { get_token, register } from '~/api/route.auth'
 
 import { SERVER_ENDPOINT } from '~/api/_global'
 
 import { useStore } from '~/stores/stores.main'
-
-import { get_token, register } from '~/api/route.auth'
 
 import { createTable } from '~/core/table'
 
@@ -67,17 +66,21 @@ const changeFiles = async (e) => {
   }
 }
 
-const user_data = ref({
-  username: '1232111',
-  password: '123456789',
-  level: 3,
-})
-
 const makeFormData = () => {
+  console.log(store.$state.username)
+  const user_data = {
+    username: store.$state.username,
+    password: store.$state.password,
+    level: store.$state.level,
+  }
+
   const formBody = []
-  for (let property in user_data.value) {
+  if (!user_data.password) {
+    return null
+  }
+  for (let property in user_data) {
     let encodedKey = encodeURIComponent(property)
-    let encodedValue = encodeURIComponent(user_data.value[property])
+    let encodedValue = encodeURIComponent(user_data[property])
     formBody.push(encodedKey + '=' + encodedValue)
   }
   return formBody.join('&')
@@ -103,10 +106,15 @@ const addMore = () => {
 }
 
 onMounted(async () => {
-  await register('1232111', '123456789', 3)
-  const { access_token, user_id } = await get_token(makeFormData())
-  store.$state.access_token = access_token
-  store.$state.user_id = user_id
+  console.log(makeFormData())
+  if (!makeFormData()) {
+    router.push('/auth')
+  } else {
+    const data = await get_token(makeFormData())
+    store.$state.access_token = data.access_token
+    store.$state.refresh_token = data.refresh_token
+    store.$state.user_id = data.user_id
+  }
 })
 </script>
 

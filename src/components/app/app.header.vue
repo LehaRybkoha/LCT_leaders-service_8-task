@@ -1,13 +1,32 @@
 <script setup>
 import { IconLogout } from '~/components/icons'
+
+import { useStore } from '~/stores/stores.main'
+
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+const store = useStore()
+const router = useRouter()
+
+const logout = () => {
+  store.$state.access_token = null
+  store.$state.user_id = null
+  store.$state.username = null
+  store.$state.password = null
+
+  router.push('/auth')
+}
+
+const name = computed(() => store.$state.username)
 </script>
 
 <template>
   <header class="header">
     <h1 class="header__title">Сервис для парсинга смет</h1>
     <div class="user">
-      <h3 class="user__name">TEST NME</h3>
-      <div class="user__logout">
+      <h3 class="user__name">{{ name }}</h3>
+      <div @click="logout" class="user__logout">
         <icon-wrapper width="30" height="30">
           <icon-logout />
         </icon-wrapper>

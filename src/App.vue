@@ -1,10 +1,11 @@
 <script setup>
-import LayoutDefault from '~/layout/default.vue'
+import { Default, Empty } from '~/layout'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const layouts = {
-  default: LayoutDefault,
+  default: Default,
+  empty: Empty,
 }
 
 const route = useRoute()

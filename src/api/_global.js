@@ -1,1 +1,1 @@
-export const SERVER_ENDPOINT = 'http://localhost:3030'
+export const SERVER_ENDPOINT = 'http://127.0.0.1:3030'
