@@ -1,7 +1,13 @@
 # Vue 3 + Vite | Full
 
-## Recommended IDE Setup
+npm i или pnpm i или yarn
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.vscode-typescript-vue-plugin)
+# DEV
 
-## Template by xaf
+npm run dev или pnpm run dev или yarn dev
+
+# PROD
+
+npm run build или pnpm run build или yarn build
+
+# hint
