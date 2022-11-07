@@ -14,8 +14,8 @@ const store = useStore()
 const route = useRoute()
 
 const setUser = (data) => {
-  store.$state.username = data.user_id
-  store.$state.password = data.user_id
+  store.$state.username = data.username
+  store.$state.password = data.password
 }
 
 const setUserInfo = (data) => {
