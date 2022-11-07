@@ -3,6 +3,17 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+const returnLevel = (level) => {
+  switch (level) {
+    case 1:
+      return 'Обычный'
+    case 2:
+      return 'Модератор'
+    case 3:
+      return 'Администратор'
+  }
+}
+
 defineProps({
   idx: {
     type: Number,
@@ -17,7 +28,7 @@ defineProps({
   <li class="table__item" @click="router.push({ query: { user_id: item.id } })">
     <span class="table__text">{{ item.id }}</span>
     <span class="table__text">{{ item.email }}</span>
-    <span class="table__text">{{ item.level }}</span>
+    <span class="table__text">{{ returnLevel(item.level) }}</span>
   </li>
 </template>
 
