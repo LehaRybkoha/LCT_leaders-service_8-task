@@ -1,24 +1,52 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { IconHome, IconTeam, IconSetup } from '~/components/icons'
+import { useStore } from '~/stores/stores.main'
+
+const store = useStore()
 
 const navs = [
   {
     name: 'Главная',
     icon: IconHome,
     to: '/',
+    level: 1,
   },
   {
     name: 'Редактирование справочников',
     icon: IconSetup,
     to: '/setup',
+    level: 2,
   },
   {
     name: 'Список пользователей',
     icon: IconTeam,
     to: '/team',
+    level: 3,
   },
 ]
+
+const navs_moderator = computed(() => {
+  return navs.filter((item) => item.level <= 2)
+})
+
+const navs_user = computed(() => {
+  return navs.filter((item) => item.level <= 1)
+})
+
+const user_level = computed(() => {
+  return store.$state.level
+})
+
+const return_navs = computed(() => {
+  if (user_level.value == 3) {
+    return navs
+  } else if (user_level.value == 2) {
+    return navs_moderator.value
+  } else {
+    return navs_user.value
+  }
+})
 </script>
 
 <template>
@@ -27,7 +55,7 @@ const navs = [
       <h1 class="sidebar__title">YAMA _TM</h1>
     </div>
     <nav class="nav">
-      <div class="nav__item" v-for="(nav, idx) of navs" :key="idx">
+      <div class="nav__item" v-for="(nav, idx) of return_navs" :key="idx">
         <router-link :to="nav.to" class="nav__link" router-link-active="active">
           <icon-wrapper class="nav__icon" width="20" height="20">
             <component :is="nav.icon" class="nav__icon" />

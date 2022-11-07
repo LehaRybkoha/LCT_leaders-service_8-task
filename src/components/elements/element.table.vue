@@ -1,7 +1,14 @@
 <script setup>
 import { CommonButton } from '~/components/common'
 import { onMounted, ref } from 'vue'
-import { ElementRowLines, ElementRowTeam } from '~/components/elements'
+import {
+  ElementRowLines,
+  ElementRowTeam,
+  ElementRowTsn,
+  ElementRowSn,
+  ElementRowKpgz,
+  ElementRowSpgz,
+} from '~/components/elements'
 import { patch_smeta } from '~/api/route.home'
 import { useStore } from '~/stores/stores.main'
 import { SERVER_ENDPOINT } from '~/api/_global'
@@ -153,6 +160,46 @@ onMounted(() => {
       </ul>
       <ul v-else-if="type === 'team'" class="table__list">
         <element-row-team
+          v-for="(item, idx) of table.items"
+          class="table__item"
+          :class="{ table__item_even: item.spgz_defined }"
+          :item="item"
+          :key="item.id"
+          :idx="idx"
+        />
+      </ul>
+      <ul v-else-if="type === 'sn'" class="table__list">
+        <element-row-sn
+          v-for="(item, idx) of table.items"
+          class="table__item"
+          :class="{ table__item_even: item.spgz_defined }"
+          :item="item"
+          :key="item.id"
+          :idx="idx"
+        />
+      </ul>
+      <ul v-else-if="type === 'tsn'" class="table__list">
+        <element-row-tsn
+          v-for="(item, idx) of table.items"
+          class="table__item"
+          :class="{ table__item_even: item.spgz_defined }"
+          :item="item"
+          :key="item.id"
+          :idx="idx"
+        />
+      </ul>
+      <ul v-else-if="type === 'kpgz'" class="table__list">
+        <element-row-kpgz
+          v-for="(item, idx) of table.items"
+          class="table__item"
+          :class="{ table__item_even: item.spgz_defined }"
+          :item="item"
+          :key="item.id"
+          :idx="idx"
+        />
+      </ul>
+      <ul v-else-if="type === 'spgz'" class="table__list">
+        <element-row-spgz
           v-for="(item, idx) of table.items"
           class="table__item"
           :class="{ table__item_even: item.spgz_defined }"

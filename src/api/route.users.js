@@ -7,3 +7,15 @@ export const getAllUsers = async (token, offset = 0, limit = 100) => {
     { token }
   )
 }
+
+export const getUserById = async (token, id) => {
+  return xfetch.$get(`${SERVER_ENDPOINT}/admin/users/${id}`, { token })
+}
+
+export const editUser = async (token, id, level) => {
+  return xfetch.$post(
+    `${SERVER_ENDPOINT}/admin/users/${id}/edit?level=${level}`,
+    {},
+    { token }
+  )
+}

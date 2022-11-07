@@ -5,13 +5,14 @@ import { getAllUsers } from '~/api/route.users'
 import { onMounted, ref, computed } from 'vue'
 import { useStore } from '~/stores/stores.main'
 import { get_token } from '~/api/route.auth'
-import { useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElementEdit } from './elements'
 
 const table = ref(null)
 const store = useStore()
 
 const route = useRoute()
+const router = useRouter()
 
 const setUser = (data) => {
   store.$state.username = data.username
@@ -21,20 +22,22 @@ const setUser = (data) => {
 const setUserInfo = (data) => {
   store.$state.access_token = data.access_token
   store.$state.refresh_token = data.refresh_token
+  store.$state.level = data.level
   store.$state.user_id = data.user_id
 }
 
 const makeFormData = () => {
   const username = JSON.parse(localStorage.getItem('username') ?? null)
   const password = JSON.parse(localStorage.getItem('password') ?? null)
+  const level = JSON.parse(localStorage.getItem('level') ?? null)
 
   const user_data = {
     username: username ?? store.$state.username,
     password: password ?? store.$state.password,
-    level: store.$state.level,
+    level: level ?? store.$state.level,
   }
 
-  setUserInfo(user_data)
+  setUser(user_data)
 
   const formBody = []
   if (!user_data.password) {
@@ -57,7 +60,6 @@ onMounted(async () => {
     router.push('/auth')
   } else {
     const data = await get_token(makeFormData())
-    setUser(data)
     setUserInfo(data)
   }
 
@@ -78,7 +80,13 @@ onMounted(async () => {
         :table="table"
         type="team"
       />
-      <element-edit class="team__edit" v-else-if="user_id" />
+      <element-edit
+        :token="store.$state.access_token"
+        class="team__edit"
+        @close="() => router.push('/team')"
+        :user-id="user_id"
+        v-else-if="store.$state.access_token && user_id"
+      />
     </div>
   </div>
 </template>

@@ -34,6 +34,7 @@ const setUser = (data) => {
 const setUserInfo = (data) => {
   store.$state.access_token = data.access_token
   store.$state.refresh_token = data.refresh_token
+  store.$state.level = data.level
   store.$state.user_id = data.user_id
 }
 
@@ -81,14 +82,15 @@ const makeFormData = () => {
   console.log(store.$state.username)
   const username = JSON.parse(localStorage.getItem('username') ?? null)
   const password = JSON.parse(localStorage.getItem('password') ?? null)
+  const level = JSON.parse(localStorage.getItem('level') ?? null)
 
   const user_data = {
     username: username ?? store.$state.username,
     password: password ?? store.$state.password,
-    level: store.$state.level,
+    level: level ?? store.$state.level,
   }
 
-  setUserInfo(user_data)
+  setUser(user_data)
 
   const formBody = []
   if (!user_data.password) {
@@ -127,7 +129,6 @@ onMounted(async () => {
     router.push('/auth')
   } else {
     const data = await get_token(makeFormData())
-    setUser(data)
     setUserInfo(data)
   }
 })

@@ -28,3 +28,19 @@ export const getKpgz = async (token, offset = 0, limit = 100) => {
     { token }
   )
 }
+
+export const getTsnId = async (token, id) => {
+  return xfetch.$get(`${SERVER_ENDPOINT}/sprav/tsn?id=${id}`, { token })
+}
+
+export const getSnId = async (token, id) => {
+  return xfetch.$get(`${SERVER_ENDPOINT}/sprav/sn?id=${id}`, { token })
+}
+
+export const getSpgzId = async (token, id) => {
+  return xfetch.$get(`${SERVER_ENDPOINT}/sprav/spgz?id=${id}`, { token })
+}
+
+export const getKpgzId = async (token, id) => {
+  return xfetch.$get(`${SERVER_ENDPOINT}/sprav/kpgz?id=${id}`, { token })
+}

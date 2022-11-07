@@ -7,11 +7,6 @@ import router from '~/router'
 
 const store = useStore()
 
-// await register('1232111', '123456789', 3)
-//   const { access_token, user_id } = await get_token(makeFormData())
-//   store.$state.access_token = access_token
-//   store.$state.user_id = user_id
-
 const form = ref({
   username: '',
   password: '',
@@ -22,7 +17,6 @@ const makeFormData = () => {
   const user_data = {
     username: form.value.username,
     password: form.value.password,
-    level: 1,
   }
 
   const formBody = []
@@ -44,11 +38,13 @@ const registerUser = async () => {
   const d = await get_token(makeFormData())
   store.$state.access_token = d.access_token
   store.$state.user_id = d.user_id
+  store.$state.level = d.level
   store.$state.username = form.value.username
   store.$state.password = form.value.password
 
   localStorage.setItem('username', JSON.stringify(form.value.username))
   localStorage.setItem('password', JSON.stringify(form.value.password))
+  localStorage.setItem('level', JSON.stringify(d.level))
 
   if (store.$state.access_token && store.$state.user_id) {
     router.push('/')
@@ -56,14 +52,16 @@ const registerUser = async () => {
 }
 
 const loginUser = async () => {
-  const { access_token, user_id } = await get_token(makeFormData())
+  const { access_token, user_id, level } = await get_token(makeFormData())
   store.$state.access_token = access_token
   store.$state.user_id = user_id
+  store.$state.level = level
   store.$state.username = form.value.username
   store.$state.password = form.value.password
 
   localStorage.setItem('username', JSON.stringify(form.value.username))
   localStorage.setItem('password', JSON.stringify(form.value.password))
+  localStorage.setItem('level', JSON.stringify(level))
 
   if (store.$state.access_token && store.$state.user_id) {
     router.push('/')
@@ -76,6 +74,9 @@ const isRegistration = ref(false)
 <template>
   <div class="auth">
     <div class="auth__content">
+      <p>SUPER USER: email - admin password - 12345678</p>
+      <p>Moderator: email - moderator password - 12345678</p>
+      <p>Simple user: email - user password - 12345678</p>
       <h1 class="auth__title" v-if="isRegistration">Регистрация</h1>
       <h1 class="auth__title" v-else>Войти</h1>
       <label class="auth__label">

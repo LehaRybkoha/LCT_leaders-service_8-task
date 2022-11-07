@@ -9,7 +9,7 @@ import { useRoute } from 'vue-router'
 import { CommonButton } from '~/components/common'
 
 const props = defineProps({
-  user: {
+  item: {
     type: Object,
   },
 })
@@ -26,8 +26,6 @@ const form = ref({
 
 onMounted(() => {
   if (props.user) {
-    form.value.email = user.email
-    form.value.level = user.level
   }
 })
 </script>
@@ -37,16 +35,8 @@ onMounted(() => {
     <div class="edit__title">Изменить пользователя</div>
     <form class="edit__form">
       <label for="" class="edit__label">
-        <span class="edit__subtitle">Email:</span>
-        <input v-model="form.email" type="text" class="edit__input" />
-      </label>
-      <label class="edit__label">
-        <span class="edit__subtitle">Уровень пользователя:</span>
-        <select v-model="form.level" class="edit__select">
-          <option value="1">Обычный</option>
-          <option value="2">Модератор</option>
-          <option value="3">Администратор</option>
-        </select>
+        <span class="edit__subtitle">ID:</span>
+        <p class="edit">{{ props.item.id }}</p>
       </label>
       <common-button class="edit__button">Сохранить</common-button>
     </form>

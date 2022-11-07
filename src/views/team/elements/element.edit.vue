@@ -1,7 +1,7 @@
 <script setup>
 import { ElementTable } from '~/components/elements'
 import { createTable } from '~/core/table'
-import { getAllUsers } from '~/api/route.users'
+import { getAllUsers, getUserById, editUser } from '~/api/route.users'
 import { onMounted, ref, computed } from 'vue'
 import { useStore } from '~/stores/stores.main'
 import { get_token } from '~/api/route.auth'
@@ -9,8 +9,14 @@ import { useRoute } from 'vue-router'
 import { CommonButton } from '~/components/common'
 
 const props = defineProps({
-  user: {
-    type: Object,
+  userId: {
+    type: String,
+  },
+  token: {
+    type: String,
+  },
+  level: {
+    type: Number,
   },
 })
 
@@ -20,36 +26,49 @@ const store = useStore()
 const route = useRoute()
 
 const form = ref({
-  email: '',
+  email: null,
   level: 1,
 })
 
-onMounted(() => {
-  if (props.user) {
-    form.value.email = user.email
-    form.value.level = user.level
-  }
+const emit = defineEmits(['close'])
+
+const saveUser = async () => {
+  await editUser(props.token, props.userId, form.value.level)
+
+  emit('close')
+}
+
+onMounted(async () => {
+  const data = await getUserById(props.token, props.userId)
+  form.value.email = data.email
+  form.value.level = data.level
 })
 </script>
 
 <template>
-  <div class="edit">
+  <div class="edit" v-if="form.email">
     <div class="edit__title">Изменить пользователя</div>
-    <form class="edit__form">
+    <div class="edit__form">
       <label for="" class="edit__label">
         <span class="edit__subtitle">Email:</span>
-        <input v-model="form.email" type="text" class="edit__input" />
+        <p class="edit__text">{{ form.email }}</p>
       </label>
       <label class="edit__label">
         <span class="edit__subtitle">Уровень пользователя:</span>
-        <select v-model="form.level" class="edit__select">
+        <select
+          :class="{ disabled: form.level === store.$state.level }"
+          v-model="form.level"
+          class="edit__select"
+        >
           <option value="1">Обычный</option>
           <option value="2">Модератор</option>
           <option value="3">Администратор</option>
         </select>
       </label>
-      <common-button class="edit__button">Сохранить</common-button>
-    </form>
+      <common-button @click="saveUser" class="edit__button"
+        >Сохранить</common-button
+      >
+    </div>
   </div>
 </template>
 
@@ -61,6 +80,10 @@ onMounted(() => {
     color: #000000;
     margin-bottom: 30px;
   }
+  &__text {
+    margin-bottom: 20px;
+    @include tg-16-semibold-poppins;
+  }
   &__subtitle {
     margin-bottom: 10px;
     display: block;
@@ -70,6 +93,10 @@ onMounted(() => {
     border-radius: 5px;
     width: 300px;
     height: 50px;
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   }
   &__input {
     border: 1px solid #b2b2b2;

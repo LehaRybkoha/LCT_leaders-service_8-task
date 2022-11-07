@@ -16,6 +16,7 @@ const logout = () => {
   store.$state.password = null
 
   localStorage.removeItem('username')
+  localStorage.removeItem('level')
   localStorage.removeItem('password')
 
   router.push('/auth')
