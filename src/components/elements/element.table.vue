@@ -30,7 +30,14 @@ const props = defineProps({
 
 const patches = ref([])
 
-const emit = defineEmits(['open_category', 'submit', 'add-more'])
+const emit = defineEmits([
+  'open_category',
+  'submit',
+  'add-more',
+  'back',
+  'update_patches',
+  'save',
+])
 
 const selectItem = (item) => {
   emit('open_category', item)
@@ -83,6 +90,10 @@ const submitItems = async () => {
   }
 }
 
+const submitItemsV2 = () => {
+  emit('update_patches', [...patches.value])
+}
+
 const changeItem = (line_number, spgz_id, idx) => {
   patches.value[idx] = createPatch(line_number, spgz_id)
 }
@@ -91,14 +102,24 @@ const addMore = () => {
   emit('add-more')
 }
 
+const back = () => {
+  emit('back')
+}
+
+const save = () => {
+  emit('save')
+}
+
 onMounted(() => {
   const table = [...props.table.items]
 
   if (table.length && props.type === 'lines') {
     table.forEach((item) => {
-      patches.value.push(
-        createPatch(item.line_number, item.hypothesises[0].spgz_piece.id)
-      )
+      if (item.hypothesises.length) {
+        patches.value.push(
+          createPatch(item.line_number, item.hypothesises[0].spgz_piece.id)
+        )
+      }
     })
   }
 })
@@ -110,19 +131,32 @@ onMounted(() => {
       <h1 class="table__title">
         {{ title }}<span v-if="table.address"> - {{ table.address }}</span>
       </h1>
-
-      <common-button
-        @click="submitItems"
-        v-if="type === 'lines'"
-        class="table__button"
-        >Подтвердить</common-button
-      >
-      <common-button
-        @click="addMore"
-        v-else-if="type === 'categories'"
-        class="table__button"
-        >Загрузить новый файл</common-button
-      >
+      <div class="table__buttons">
+        <common-button
+          @click="back"
+          v-if="type === 'lines'"
+          class="table__button table__button_exit"
+          >Выйти</common-button
+        >
+        <common-button
+          @click="submitItemsV2"
+          v-if="type === 'lines'"
+          class="table__button"
+          >Подтвердить</common-button
+        >
+        <common-button
+          @click="addMore"
+          v-if="type === 'categories'"
+          class="table__button"
+          >Загрузить новый файл</common-button
+        >
+        <common-button
+          @click="save"
+          v-if="type === 'categories'"
+          class="table__button"
+          >Сохранить смету</common-button
+        >
+      </div>
     </div>
     <div class="table__content">
       <ul class="table__heading">
@@ -214,6 +248,14 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .table {
+  &__buttons {
+    display: flex;
+  }
+  &__button {
+    &_exit {
+      margin-right: 10px;
+    }
+  }
   &__header {
     @include tg-h4-bold;
     padding: 30px 40px;

@@ -11,7 +11,9 @@ const props = defineProps({
   },
 })
 
-const selectedSpgz = props.item.hypothesises[0].spgz_piece.id
+const selectedSpgz = props.item.hypothesises.length
+  ? props.item.hypothesises[0].spgz_piece.id
+  : ''
 const modelSpgz = ref(selectedSpgz)
 
 const emit = defineEmits(['change-item'])

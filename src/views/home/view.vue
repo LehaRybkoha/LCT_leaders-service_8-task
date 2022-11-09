@@ -25,6 +25,7 @@ const title = ref('Категории')
 
 const table = ref(null)
 const chosen_cat = ref(null)
+const table_cat = ref(null)
 
 const setUser = (data) => {
   store.$state.username = data.username
@@ -36,6 +37,55 @@ const setUserInfo = (data) => {
   store.$state.refresh_token = data.refresh_token
   store.$state.level = data.level
   store.$state.user_id = data.user_id
+}
+
+const submitItems = async () => {
+  try {
+    let filename = ''
+    const url = `${SERVER_ENDPOINT}/smeta/patch_smeta/${store.$state.user_id}`
+    fetch(url, {
+      headers: {
+        Authorization: 'Bearer ' + store.$state.access_token,
+        Accept: '*/*',
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        patches: [...patches.value],
+      }),
+      token: store.$state.access_token,
+    })
+      .then((res) => {
+        const disposition = res.headers.get('content-disposition')
+        filename = disposition.split(/;(.+)/)[1].split(/=(.+)/)[1]
+        console.log(filename, 'NAME')
+        if (filename.toLowerCase().startsWith("utf-8''"))
+          filename = decodeURIComponent(filename.replace("utf-8''", ''))
+        else filename = filename.replace(/['"]/g, '')
+        return res.blob()
+      })
+      .then((blob) => {
+        var url = window.URL.createObjectURL(blob)
+        var a = document.createElement('a')
+        a.href = url
+        a.download = filename
+        document.body.appendChild(a) // append the element to the dom
+        a.click()
+        a.remove() // afterwards, remove the element
+        emit('submit')
+      })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+const patches = ref([])
+
+const createPatch = (line_number, spgz_id) => {
+  return {
+    line_number,
+    spgz_id,
+  }
 }
 
 const changeFiles = async (e) => {
@@ -72,10 +122,41 @@ const changeFiles = async (e) => {
         categoriesData.value.categories,
         categoriesData.value.address
       )
+      table_cat.value = createTable(
+        headings,
+        categoriesData.value.categories,
+        categoriesData.value.address
+      )
+
+      console.log(table.value.items)
+
+      table.value.items.forEach((item) => {
+        item.lines.forEach((item_two) => {
+          if (item_two.hypothesises.length) {
+            patches.value.push(
+              createPatch(
+                item_two.line_number,
+                item_two.hypothesises[0].spgz_piece.id
+              )
+            )
+          }
+        })
+      })
     }
   } catch (e) {
     console.log(e)
   }
+}
+
+const submitItemsV2 = (items) => {
+  items.forEach((item) => {
+    patches.value.forEach((item_patch) => {
+      if (item_patch.line_number === item.line_number) {
+        item_patch.spgz_id = item.spgz_id
+      }
+    })
+  })
+  back()
 }
 
 const makeFormData = () => {
@@ -119,6 +200,11 @@ const open_category = (category) => {
   title.value = category.name
 }
 
+const back = () => {
+  table.value = table_cat.value
+  chosen_cat.value = null
+}
+
 const addMore = () => {
   isLoaded.value = false
 }
@@ -150,6 +236,7 @@ onMounted(async () => {
     <element-table
       @open_category="open_category"
       @add-more="addMore"
+      @save="submitItems"
       class="table-main"
       type="categories"
       :title="title"
@@ -157,13 +244,17 @@ onMounted(async () => {
       v-else-if="table && !chosen_cat"
     />
     <element-table
-      class="table-lines"
-      :title="title"
-      type="lines"
-      :table="chosen_cat"
-      @submit="chosen_cat = null"
       v-else-if="chosen_cat && table"
+      @back="back"
+      @submit="chosen_cat = null"
+      @update_patches="submitItemsV2"
+      @save="submitItems"
+      :title="title"
+      :table="chosen_cat"
+      class="table-lines"
+      type="lines"
     />
+    <div v-else>Загрузка....</div>
   </div>
 </template>
 
