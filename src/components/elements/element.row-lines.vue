@@ -65,6 +65,7 @@ watch(modelSpgz, (val) => {
   &__select {
     height: 80px;
     border-radius: 4px;
+    width: 100px;
   }
   &__text {
     @include tg-12-medium;
