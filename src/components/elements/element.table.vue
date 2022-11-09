@@ -136,7 +136,7 @@ onMounted(() => {
           @click="back"
           v-if="type === 'lines'"
           class="table__button table__button_exit"
-          >Выйти</common-button
+          >Вернуться к разделам</common-button
         >
         <common-button
           @click="submitItemsV2"
@@ -147,7 +147,7 @@ onMounted(() => {
         <common-button
           @click="addMore"
           v-if="type === 'categories'"
-          class="table__button"
+          class="table__button table__button_new"
           >Загрузить новый файл</common-button
         >
         <common-button
@@ -252,7 +252,8 @@ onMounted(() => {
     display: flex;
   }
   &__button {
-    &_exit {
+    &_exit,
+    &_new {
       margin-right: 10px;
     }
   }
