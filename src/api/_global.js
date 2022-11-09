@@ -1,1 +1,1 @@
-export const SERVER_ENDPOINT = 'http://130.193.51.59:3030'
+export const SERVER_ENDPOINT = `http://${window.location.hostname}:3030`
