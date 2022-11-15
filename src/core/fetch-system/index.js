@@ -7,7 +7,7 @@
  * @property {...any} args
  */
 
-async function $fetch({ path, body, method, headers, type }, ...args) {
+async function $fetch({ path, body, method, headers, type, is_file }, ...args) {
   try {
     const f = await fetch(path, {
       body:
@@ -20,9 +20,12 @@ async function $fetch({ path, body, method, headers, type }, ...args) {
       ...args,
     })
     if (!f.ok) return null
-    const parsed = await f.json()
-    parsed.status = f.status
-    return parsed
+    if (!is_file) {
+      const parsed = await f.json()
+      parsed.status = f.status
+      return parsed
+    }
+    return f
   } catch (e) {
     console.log('[FETCH ERROR]', e)
     return {
@@ -44,7 +47,7 @@ export class xfetch {
   static #with_body(
     path,
     body,
-    { token, type = 'application/json;charset=utf-8' } = {},
+    { token, type = 'application/json;charset=utf-8', is_file = false } = {},
     method = 'POST'
   ) {
     const headers = {}
@@ -55,6 +58,7 @@ export class xfetch {
       body,
       headers,
       type,
+      is_file,
     })
   }
 
@@ -64,8 +68,8 @@ export class xfetch {
     return $fetch({ path, method: 'GET', headers })
   }
 
-  static $post(path, body, { token, type } = {}) {
-    return this.#with_body(path, body, { token, type }, 'POST')
+  static $post(path, body, { token, type, is_file } = {}) {
+    return this.#with_body(path, body, { token, type, is_file }, 'POST')
   }
 
   static $put(path, body, { token } = {}) {

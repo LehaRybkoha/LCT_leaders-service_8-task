@@ -89,7 +89,7 @@ onMounted(async () => {
     display: block;
   }
   &__select {
-    border: 1px solid #b2b2b2;
+    border: 1px solid $border-color;
     border-radius: 5px;
     width: 300px;
     height: 50px;
@@ -99,7 +99,7 @@ onMounted(async () => {
     }
   }
   &__input {
-    border: 1px solid #b2b2b2;
+    border: 1px solid $border-color;
     border-radius: 5px;
     display: block;
     height: 50px;

@@ -1,6 +1,6 @@
 <script setup>
 import { CommonButton } from '~/components/common'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import {
   ElementRowLines,
   ElementRowTeam,
@@ -8,6 +8,7 @@ import {
   ElementRowSn,
   ElementRowKpgz,
   ElementRowSpgz,
+  ElementRowCategories,
 } from '~/components/elements'
 import { patch_smeta } from '~/api/route.home'
 import { useStore } from '~/stores/stores.main'
@@ -50,47 +51,7 @@ const createPatch = (line_number, spgz_id) => {
   }
 }
 
-const submitItems = async () => {
-  try {
-    let filename = ''
-    const url = `${SERVER_ENDPOINT}/smeta/patch_smeta/${store.$state.user_id}`
-    fetch(url, {
-      headers: {
-        Authorization: 'Bearer ' + store.$state.access_token,
-        Accept: '*/*',
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        patches: [...patches.value],
-      }),
-      token: store.$state.access_token,
-    })
-      .then((res) => {
-        const disposition = res.headers.get('content-disposition')
-        filename = disposition.split(/;(.+)/)[1].split(/=(.+)/)[1]
-        console.log(filename, 'NAME')
-        if (filename.toLowerCase().startsWith("utf-8''"))
-          filename = decodeURIComponent(filename.replace("utf-8''", ''))
-        else filename = filename.replace(/['"]/g, '')
-        return res.blob()
-      })
-      .then((blob) => {
-        var url = window.URL.createObjectURL(blob)
-        var a = document.createElement('a')
-        a.href = url
-        a.download = filename
-        document.body.appendChild(a) // append the element to the dom
-        a.click()
-        a.remove() // afterwards, remove the element
-        emit('submit')
-      })
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-const submitItemsV2 = () => {
+const submitItems = () => {
   emit('update_patches', [...patches.value])
 }
 
@@ -110,6 +71,20 @@ const save = () => {
   emit('save')
 }
 
+const rows = {
+  lines: ElementRowLines,
+  team: ElementRowTeam,
+  tsn: ElementRowTsn,
+  sn: ElementRowSn,
+  kpgz: ElementRowKpgz,
+  spgz: ElementRowSpgz,
+  categories: ElementRowCategories,
+}
+
+const computedRow = computed(() => {
+  return rows[props.type]
+})
+
 onMounted(() => {
   const table = [...props.table.items]
 
@@ -128,9 +103,12 @@ onMounted(() => {
 <template>
   <div class="table">
     <div class="table__header">
-      <h1 class="table__title">
-        {{ title }}<span v-if="table.address"> - {{ table.address }}</span>
-      </h1>
+      <div class="table__title">
+        <h1 class="table__title-text">{{ title }}</h1>
+        <p class="table__address" v-if="table.address">
+          Адрес: {{ table.address }}
+        </p>
+      </div>
       <div class="table__buttons">
         <common-button
           @click="back"
@@ -139,7 +117,7 @@ onMounted(() => {
           >Вернуться к разделам</common-button
         >
         <common-button
-          @click="submitItemsV2"
+          @click="submitItems"
           v-if="type === 'lines'"
           class="table__button"
           >Подтвердить</common-button
@@ -168,78 +146,16 @@ onMounted(() => {
           <span class="table__heading-text">{{ heading }}</span>
         </li>
       </ul>
-
-      <ul v-if="type === 'categories'" class="table__list">
-        <li
+      <ul class="table__list">
+        <component
+          v-for="(item, idx) of table.items"
           class="table__item"
-          :class="{ table__item_even: idx % 2 === 0 }"
-          v-for="(item, idx) of table.items"
+          :item="item"
           :key="idx"
-          @click="selectItem(item)"
-        >
-          <span class="table__text">{{ idx }}</span>
-          <span class="table__text">{{ item.name }}</span>
-        </li>
-      </ul>
-      <ul v-else-if="type === 'lines'" class="table__list">
-        <element-row-lines
-          v-for="(item, idx) of table.items"
+          :idx="idx"
           @change-item="changeItem"
-          class="table__item"
-          :class="{ table__item_sure: item.spgz_defined }"
-          :item="item"
-          :key="idx"
-          :idx="idx"
-        />
-      </ul>
-      <ul v-else-if="type === 'team'" class="table__list">
-        <element-row-team
-          v-for="(item, idx) of table.items"
-          class="table__item"
-          :class="{ table__item_even: item.spgz_defined }"
-          :item="item"
-          :key="item.id"
-          :idx="idx"
-        />
-      </ul>
-      <ul v-else-if="type === 'sn'" class="table__list">
-        <element-row-sn
-          v-for="(item, idx) of table.items"
-          class="table__item"
-          :class="{ table__item_even: item.spgz_defined }"
-          :item="item"
-          :key="item.id"
-          :idx="idx"
-        />
-      </ul>
-      <ul v-else-if="type === 'tsn'" class="table__list">
-        <element-row-tsn
-          v-for="(item, idx) of table.items"
-          class="table__item"
-          :class="{ table__item_even: item.spgz_defined }"
-          :item="item"
-          :key="item.id"
-          :idx="idx"
-        />
-      </ul>
-      <ul v-else-if="type === 'kpgz'" class="table__list">
-        <element-row-kpgz
-          v-for="(item, idx) of table.items"
-          class="table__item"
-          :class="{ table__item_even: item.spgz_defined }"
-          :item="item"
-          :key="item.id"
-          :idx="idx"
-        />
-      </ul>
-      <ul v-else-if="type === 'spgz'" class="table__list">
-        <element-row-spgz
-          v-for="(item, idx) of table.items"
-          class="table__item"
-          :class="{ table__item_even: item.spgz_defined }"
-          :item="item"
-          :key="item.id"
-          :idx="idx"
+          @open_category="selectItem"
+          :is="computedRow"
         />
       </ul>
     </div>

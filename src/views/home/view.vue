@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { CommonButton } from '~/components/common'
 import { useRoute, useRouter } from 'vue-router'
-import { upload_smeta } from '~/api/route.home'
+import { upload_smeta, patch_smeta } from '~/api/route.home'
 import { ElementTable } from '~/components/elements'
 import { get_token, register } from '~/api/route.auth'
 
@@ -40,43 +40,11 @@ const setUserInfo = (data) => {
 }
 
 const submitItems = async () => {
-  try {
-    let filename = ''
-    const url = `${SERVER_ENDPOINT}/smeta/patch_smeta/${store.$state.user_id}`
-    fetch(url, {
-      headers: {
-        Authorization: 'Bearer ' + store.$state.access_token,
-        Accept: '*/*',
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        patches: [...patches.value],
-      }),
-      token: store.$state.access_token,
-    })
-      .then((res) => {
-        const disposition = res.headers.get('content-disposition')
-        filename = disposition.split(/;(.+)/)[1].split(/=(.+)/)[1]
-        console.log(filename, 'NAME')
-        if (filename.toLowerCase().startsWith("utf-8''"))
-          filename = decodeURIComponent(filename.replace("utf-8''", ''))
-        else filename = filename.replace(/['"]/g, '')
-        return res.blob()
-      })
-      .then((blob) => {
-        var url = window.URL.createObjectURL(blob)
-        var a = document.createElement('a')
-        a.href = url
-        a.download = filename
-        document.body.appendChild(a) // append the element to the dom
-        a.click()
-        a.remove() // afterwards, remove the element
-        emit('submit')
-      })
-  } catch (e) {
-    console.log(e)
-  }
+  await patch_smeta(
+    store.$state.user_id,
+    patches.value,
+    store.$state.access_token
+  )
 }
 
 const patches = ref([])
@@ -148,7 +116,7 @@ const changeFiles = async (e) => {
   }
 }
 
-const submitItemsV2 = (items) => {
+const updatePatches = (items) => {
   items.forEach((item) => {
     patches.value.forEach((item_patch) => {
       if (item_patch.line_number === item.line_number) {
@@ -247,7 +215,7 @@ onMounted(async () => {
       v-else-if="chosen_cat && table"
       @back="back"
       @submit="chosen_cat = null"
-      @update_patches="submitItemsV2"
+      @update_patches="updatePatches"
       @save="submitItems"
       :title="title"
       :table="chosen_cat"

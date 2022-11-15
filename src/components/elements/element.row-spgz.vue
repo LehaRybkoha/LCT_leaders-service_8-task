@@ -1,10 +1,11 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { IconEdit } from '../icons'
 
 const router = useRouter()
 
 const edit = (item) => {
-  router.push({ query: { spgz: item.id } })
+  router.push({ query: { spgz: item.id, sprav: 'spgz' } })
 }
 
 const props = defineProps({
@@ -19,18 +20,41 @@ const props = defineProps({
 
 <template>
   <li class="table__item" @click="edit(item)">
-    <span class="table__text">{{ item.id }}</span>
+    <span class="table__text">{{ item.data_id }}</span>
     <span class="table__text">{{ item.name }}</span>
     <span class="table__text" v-if="item.kpgz_piece">{{
       item.kpgz_piece.name
     }}</span>
+    <div class="table__icon">
+      <div class="table__icon-wrapper">
+        <icon-wrapper width="20" height="20">
+          <icon-edit />
+        </icon-wrapper>
+      </div>
+    </div>
   </li>
 </template>
 
 <style lang="scss" scoped>
 .table {
+  &__icon {
+    opacity: 0;
+    position: absolute;
+    right: 10px;
+    bottom: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    transition: opacity 0.3s ease;
+    &-wrapper {
+      background: $accent-purple;
+      border-radius: 5px;
+      padding: 8px;
+    }
+  }
   &__item {
     display: grid;
+    position: relative;
     grid-template-columns: 1fr 4fr;
     padding: 20px 30px;
     transition: border 0.3s ease;
@@ -39,6 +63,9 @@ const props = defineProps({
     cursor: pointer;
     &:hover {
       border: 1px solid $accent-purple;
+      .table__icon {
+        opacity: 1;
+      }
     }
     &_even {
       background-color: rgba(0, 0, 0, 0.05);

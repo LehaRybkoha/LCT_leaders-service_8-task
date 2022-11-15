@@ -2,7 +2,7 @@
 import { ElementTable } from '~/components/elements'
 import { createTable } from '~/core/table'
 import { getAllUsers } from '~/api/route.users'
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
 import { useStore } from '~/stores/stores.main'
 import { get_token } from '~/api/route.auth'
 import { useRoute, useRouter } from 'vue-router'
@@ -76,22 +76,22 @@ const chooseCat = async (cat) => {
   const token = store.$state.access_token
   if (cat === 'ТСН') {
     const data = await getTsn(token)
-    const heading = ['ID', 'Наименование', 'Код', 'Цена', 'Ед.изм']
+    const heading = ['Наименование', 'Шифр', 'Цена, руб.', 'Ед. изм.']
     table.value = createTable(heading, data)
   }
   if (cat === 'КПГЗ') {
     const data = await getKpgz(token)
-    const heading = ['ID', 'Наименование']
+    const heading = ['Наименование']
     table.value = createTable(heading, data)
   }
   if (cat === 'СПГЗ') {
     const data = await getSpgz(token)
-    const heading = ['ID', 'Наименование', 'КПГЗ Родителя']
+    const heading = ['ID', 'Наименование', 'Шифр']
     table.value = createTable(heading, data)
   }
   if (cat === 'СН') {
     const data = await getSn(token)
-    const heading = ['ID', 'Наименование', 'КПГЗ Родителя', 'Цена', 'Ед.изм']
+    const heading = ['Наименование', 'Шифр', 'Цена, руб.', 'Ед. изм.']
     table.value = createTable(heading, data)
   }
   router.replace('/setup')
@@ -120,28 +120,42 @@ const isEdit = computed(() => {
 const chosen_item = ref(null)
 
 watch(spgz_id, async () => {
+  chosen_item.value = null
   if (isEdit.value) {
-    chosen_item.value = await getSpgzId(spgz_id.value)
+    chosen_item.value = await getSpgzId(
+      store.$state.access_token,
+      spgz_id.value
+    )
   }
 })
 
 watch(kpgz_id, async () => {
+  chosen_item.value = null
   if (isEdit.value) {
-    chosen_item.value = await getKpgzId(kpgz_id.value)
+    chosen_item.value = await getKpgzId(
+      store.$state.access_token,
+      kpgz_id.value
+    )
   }
 })
 
 watch(sn_id, async () => {
+  chosen_item.value = null
   if (isEdit.value) {
-    chosen_item.value = await getSnId(sn_id.value)
+    chosen_item.value = await getSnId(store.$state.access_token, sn_id.value)
   }
 })
 
 watch(tsn_id, async () => {
+  chosen_item.value = null
   if (isEdit.value) {
-    chosen_item.value = await getTsnId(tsn_id.value)
+    chosen_item.value = await getTsnId(store.$state.access_token, tsn_id.value)
   }
 })
+
+const back = () => {
+  router.replace('/setup')
+}
 
 onMounted(async () => {
   if (!makeFormData()) {
@@ -197,7 +211,7 @@ onMounted(async () => {
       />
     </div>
     <div class="sprav__content" v-else>
-      <element-edit v-if="chosen_item" :item="chosen_item" />
+      <element-edit v-if="chosen_item" :item="chosen_item" @back="back" />
     </div>
   </div>
 </template>
@@ -210,26 +224,26 @@ onMounted(async () => {
   &__table {
     &-tsn {
       @include deep('.table__heading') {
-        grid-template-columns: 1fr 4fr 1fr 1fr 1fr;
+        grid-template-columns: 4fr 1fr 1fr 1fr;
       }
       @include deep('.table__item') {
-        grid-template-columns: 1fr 4fr 1fr 1fr 1fr;
+        grid-template-columns: 4fr 1fr 1fr 1fr;
       }
     }
     &-sn {
       @include deep('.table__heading') {
-        grid-template-columns: 1fr 4fr 1fr 1fr 1fr;
+        grid-template-columns: 4fr 1fr 1fr 1fr;
       }
       @include deep('.table__item') {
-        grid-template-columns: 1fr 4fr 1fr 1fr 1fr;
+        grid-template-columns: 4fr 1fr 1fr 1fr;
       }
     }
     &-kpgz {
       @include deep('.table__heading') {
-        grid-template-columns: 1fr 4fr;
+        grid-template-columns: 4fr;
       }
       @include deep('.table__item') {
-        grid-template-columns: 1fr 4fr;
+        grid-template-columns: 4fr;
       }
     }
     &-spgz {

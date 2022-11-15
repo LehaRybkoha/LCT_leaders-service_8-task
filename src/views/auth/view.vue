@@ -144,14 +144,14 @@ const isRegistration = ref(false)
     margin-bottom: 10px;
   }
   &__content {
-    border: 1px solid #b2b2b2;
+    border: 1px solid $border-color;
     border-radius: 5px;
     padding: 20px;
     width: 500px;
     flex-direction: column;
   }
   &__input {
-    border: 1px solid #b2b2b2;
+    border: 1px solid $border-color;
     border-radius: 5px;
     display: block;
     padding: 10px;

@@ -1,5 +1,5 @@
 <script setup>
-import { CommonButton } from '~/components/common'
+import { CommonButton, CommonSelect } from '~/components/common'
 import { onMounted, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -28,14 +28,15 @@ watch(modelSpgz, (val) => {
 </script>
 
 <template>
-  <li class="table__item">
+  <li class="table__item" :class="{ table__item_sure: item.spgz_defined }">
     <span class="table__text">{{ idx }}</span>
     <span class="table__text">{{ item.code }}</span>
     <span class="table__text">{{ item.name }}</span>
     <span class="table__text">{{ item.uom }}</span>
     <span class="table__text">{{ item.amount }}</span>
     <span class="table__text">{{ item.price }}</span>
-    <select v-model="modelSpgz" class="table__select" name="hypothesises">
+    <common-select />
+    <!-- <select v-model="modelSpgz" class="table__select" name="hypothesises">
       <option
         v-for="(option, idx) of item.hypothesises"
         :key="idx"
@@ -43,7 +44,7 @@ watch(modelSpgz, (val) => {
       >
         СПГЗ: {{ option.spgz_piece.name }}
       </option>
-    </select>
+    </select> -->
   </li>
 </template>
 
