@@ -57,7 +57,6 @@ const registerUser = async () => {
 }
 
 const loginUser = async () => {
-  console.log(is_error_user.value, 'VAL')
   if (!is_error_user.value || !is_error_pass.value) {
     return
   }

@@ -25,43 +25,6 @@ const store = useStore()
 const route = useRoute()
 const router = useRouter()
 
-const setUser = (data) => {
-  store.$state.username = data.username
-  store.$state.password = data.password
-}
-
-const setUserInfo = (data) => {
-  store.$state.access_token = data.access_token
-  store.$state.refresh_token = data.refresh_token
-  store.$state.login = data.login
-  store.$state.user_id = data.user_id
-}
-
-const makeFormData = () => {
-  const username = JSON.parse(localStorage.getItem('username') ?? null)
-  const password = JSON.parse(localStorage.getItem('password') ?? null)
-  const level = JSON.parse(localStorage.getItem('level') ?? null)
-
-  const user_data = {
-    username: username ?? store.$state.username,
-    password: password ?? store.$state.password,
-    level: level ?? store.$state.level,
-  }
-
-  setUser(user_data)
-
-  const formBody = []
-  if (!user_data.password) {
-    return null
-  }
-  for (let property in user_data) {
-    let encodedKey = encodeURIComponent(property)
-    let encodedValue = encodeURIComponent(user_data[property])
-    formBody.push(encodedKey + '=' + encodedValue)
-  }
-  return formBody.join('&')
-}
-
 const user_id = computed(() => {
   return route.query.user_id
 })
@@ -158,13 +121,7 @@ const back = () => {
 }
 
 onMounted(async () => {
-  if (!makeFormData()) {
-    router.push('/auth')
-  } else {
-    const data = await get_token(makeFormData())
-    setUserInfo(data)
-    chooseCat(chosen_cat.value)
-  }
+  chooseCat(chosen_cat.value)
 })
 </script>
 

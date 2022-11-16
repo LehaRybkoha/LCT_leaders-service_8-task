@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { IconArrow } from '../icons'
 
 const props = defineProps({
   items: {
@@ -46,6 +47,11 @@ onMounted(() => {
         </li>
       </ul>
     </div>
+    <div class="select__icon">
+      <icon-wrapper width="30" height="30">
+        <icon-arrow />
+      </icon-wrapper>
+    </div>
   </div>
 </template>
 
@@ -54,8 +60,15 @@ onMounted(() => {
   position: relative;
   max-width: 300px;
   width: 100%;
+  &__icon {
+    position: absolute;
+    right: 15px;
+    bottom: 4px;
+    transform: rotate(90deg);
+  }
   &__filled {
     line-height: 20px;
+    text-align: left;
   }
   &__input {
     border: 1px solid $primary-grey;

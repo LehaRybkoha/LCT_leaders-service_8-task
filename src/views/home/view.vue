@@ -33,13 +33,6 @@ const setUser = (data) => {
   store.$state.password = data.password
 }
 
-const setUserInfo = (data) => {
-  store.$state.access_token = data.access_token
-  store.$state.refresh_token = data.refresh_token
-  store.$state.level = data.level
-  store.$state.user_id = data.user_id
-}
-
 const submitItems = async () => {
   await patch_smeta(
     store.$state.user_id,
@@ -103,7 +96,7 @@ const changeFiles = async (e) => {
         'Наименование раздела',
         'Стоимость всего раздела, руб.',
         'Ключевая работа',
-        '???',
+        'Шифр',
       ]
 
       console.log(categoriesData.value, 'DATA')
@@ -149,36 +142,10 @@ const updatePatches = (items) => {
   back()
 }
 
-const makeFormData = () => {
-  console.log(store.$state.username)
-  const username = JSON.parse(localStorage.getItem('username') ?? null)
-  const password = JSON.parse(localStorage.getItem('password') ?? null)
-  const level = JSON.parse(localStorage.getItem('level') ?? null)
-
-  const user_data = {
-    username: username ?? store.$state.username,
-    password: password ?? store.$state.password,
-    level: level ?? store.$state.level,
-  }
-
-  setUser(user_data)
-
-  const formBody = []
-  if (!user_data.password) {
-    return null
-  }
-  for (let property in user_data) {
-    let encodedKey = encodeURIComponent(property)
-    let encodedValue = encodeURIComponent(user_data[property])
-    formBody.push(encodedKey + '=' + encodedValue)
-  }
-  return formBody.join('&')
-}
-
 const open_category = (category) => {
   const headings = [
     '№',
-    '???',
+    'Шифр',
     'Наименование работы',
     'Кол-во',
     'Ед. изм.',
@@ -209,16 +176,6 @@ const next = () => {
     step.value = 1
   }
 }
-
-onMounted(async () => {
-  console.log(makeFormData())
-  if (!makeFormData()) {
-    router.push('/auth')
-  } else {
-    const data = await get_token(makeFormData())
-    setUserInfo(data)
-  }
-})
 </script>
 
 <template>
