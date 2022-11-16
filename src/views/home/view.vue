@@ -58,6 +58,56 @@ const createPatch = (line_number, spgz_id) => {
   }
 }
 
+const clearPage = () => {
+  categoriesData.value = null
+  table.value = null
+  table_cat.value = null
+  isLoaded.value = false
+  store.$state.categoriesData = null
+}
+
+const initPage = () => {
+  if (!store.$state.categoriesData) {
+    return
+  }
+  categoriesData.value = store.$state.categoriesData
+
+  const headings = [
+    '№',
+    'Наименование раздела',
+    'Стоимость всего раздела, руб.',
+    'Ключевая работа',
+    'Шифр',
+  ]
+
+  table.value = createTable(headings, categoriesData.value.categories, {
+    address: categoriesData.value.address,
+    name: 'Название: ' + categoriesData.value.name,
+    total_price: categoriesData.value.total_price,
+  })
+  table_cat.value = createTable(headings, categoriesData.value.categories, {
+    address: categoriesData.value.address,
+  })
+
+  console.log(table.value.items)
+
+  table.value.items.forEach((item) => {
+    item.lines.forEach((item_two) => {
+      if (item_two.hypothesises.length) {
+        patches.value.push(
+          createPatch(
+            item_two.line_number,
+            item_two.hypothesises[0].spgz_piece.id
+          )
+        )
+      }
+    })
+    key_lines.value.push(item.key_line.line_number)
+
+    isLoaded.value = true
+  })
+}
+
 const changeFiles = async (e) => {
   try {
     const files = e.target.files
@@ -91,40 +141,9 @@ const changeFiles = async (e) => {
         form.value.address
       )
 
-      const headings = [
-        '№',
-        'Наименование раздела',
-        'Стоимость всего раздела, руб.',
-        'Ключевая работа',
-        'Шифр',
-      ]
+      store.$state.categoriesData = categoriesData.value
 
-      console.log(categoriesData.value, 'DATA')
-
-      table.value = createTable(headings, categoriesData.value.categories, {
-        address: categoriesData.value.address,
-        name: categoriesData.value.name,
-        total_price: categoriesData.value.total_price,
-      })
-      table_cat.value = createTable(headings, categoriesData.value.categories, {
-        address: categoriesData.value.address,
-      })
-
-      console.log(table.value.items)
-
-      table.value.items.forEach((item) => {
-        item.lines.forEach((item_two) => {
-          if (item_two.hypothesises.length) {
-            patches.value.push(
-              createPatch(
-                item_two.line_number,
-                item_two.hypothesises[0].spgz_piece.id
-              )
-            )
-          }
-        })
-        key_lines.value.push(item.key_line.line_number)
-      })
+      initPage()
     }
   } catch (e) {
     console.log(e)
@@ -156,6 +175,7 @@ const open_category = (category) => {
   console.log(category, 'acsca')
 
   chosen_cat.value = createTable(headings, category.lines, {
+    name: 'Состав раздела',
     key_line: category.key_line,
   })
   title.value = category.name
@@ -167,7 +187,7 @@ const back = () => {
 }
 
 const addMore = () => {
-  isLoaded.value = false
+  clearPage()
 }
 
 const next = () => {
@@ -176,6 +196,10 @@ const next = () => {
     step.value = 1
   }
 }
+
+onMounted(() => {
+  initPage()
+})
 </script>
 
 <template>

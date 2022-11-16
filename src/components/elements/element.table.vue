@@ -131,7 +131,7 @@ onMounted(() => {
   <div class="table">
     <div class="table__header">
       <div class="table__title">
-        <h1 class="table__title-text">Название: {{ table.name }}</h1>
+        <h1 class="table__title-text">{{ table.name }}</h1>
         <p class="table__desc" v-if="table.address">
           Адрес: <span class="table__desc_bold">{{ table.address }}</span>
         </p>
@@ -145,13 +145,13 @@ onMounted(() => {
           @click="back"
           v-if="type === 'lines'"
           class="table__button table__button_exit"
-          >Вернуться к разделам</common-button
+          >Не сохранять и вернуться к разделам</common-button
         >
         <common-button
           @click="submitItems"
           v-if="type === 'lines'"
           class="table__button"
-          >Подтвердить</common-button
+          >Сохранить и вернуться к разделам</common-button
         >
         <common-button
           @click="addMore"

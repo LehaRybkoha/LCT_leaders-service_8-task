@@ -15,12 +15,7 @@ defineProps({
 </script>
 
 <template>
-  <button
-    class="el"
-    type="button"
-    @click="$emit('click')"
-    :class="[`el-${variant}`, `el-${wrap}`]"
-  >
+  <button class="el" type="button" :class="[`el-${variant}`, `el-${wrap}`]">
     <slot />
   </button>
 </template>

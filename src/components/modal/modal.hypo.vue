@@ -36,7 +36,7 @@ const change = (item) => {
   <div class="modal">
     <div class="modal__content">
       <label class="modal__label">
-        <h4 class="modal__subtitle">Выберите СПГЗ:</h4>
+        <h4 class="modal__subtitle">Выберите СПГЗ из выпадающего списка:</h4>
         <common-select
           :items="items"
           :selected-item="selected_item"

@@ -92,7 +92,7 @@ const isRegistration = ref(false)
 <template>
   <div class="auth">
     <div class="auth__content">
-      <p>SUPER USER: email - admin1 password - 12345678</p>
+      <p>SUPER USER: email - admin password - 12345678</p>
       <p>Moderator: email - moderator password - 12345678</p>
       <p>Simple user: email - user password - 12345678</p>
       <h1 class="auth__title" v-if="isRegistration">Регистрация</h1>
