@@ -12,11 +12,18 @@ const form = ref({
   password: '',
 })
 
+const is_error_user = computed(() => form.value.username)
+const is_error_pass = computed(() => form.value.pass)
+
 const makeFormData = () => {
   console.log(form.value.username)
   const user_data = {
     username: form.value.username,
     password: form.value.password,
+  }
+
+  if (!is_error_user.username && !is_error_pass.password) {
+    return
   }
 
   const formBody = []
@@ -81,11 +88,19 @@ const isRegistration = ref(false)
       <h1 class="auth__title" v-else>Войти</h1>
       <label class="auth__label">
         <div class="auth__subtitle">Email:</div>
-        <common-input v-model="form.username" class="auth__input" />
+        <common-input
+          v-model="form.username"
+          :value="form.username"
+          class="auth__input"
+        />
       </label>
       <label class="auth__label">
         <div class="auth__subtitle">Пароль:</div>
-        <common-input v-model="form.password" class="auth__input" />
+        <common-input
+          v-model="form.password"
+          :value="form.password"
+          class="auth__input"
+        />
       </label>
       <!-- <label class="auth__label">
         <div class="auth__subtitle">Уовень пользователя:</div>
