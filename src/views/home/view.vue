@@ -72,13 +72,6 @@ const changeFiles = async (e) => {
     if (files.length) {
       isLoaded.value = true
 
-      categoriesData.value = await parse_smeta(
-        store.$state.access_token,
-        store.$state.user_id,
-        form.value.name,
-        form.value.address
-      )
-
       let file = files[0]
       let formData = new FormData()
 
@@ -96,6 +89,13 @@ const changeFiles = async (e) => {
           body: formData,
           token: store.$state.access_token,
         }
+      )
+
+      categoriesData.value = await parse_smeta(
+        store.$state.access_token,
+        store.$state.user_id,
+        form.value.name,
+        form.value.address
       )
 
       const headings = [
@@ -183,7 +183,7 @@ const open_category = (category) => {
     'Кол-во',
     'Ед. изм.',
     'Цена, руб.',
-    'Выбранное СПГЗ',
+    'Соответствующее СПГЗ из справочника',
   ]
 
   console.log(category, 'acsca')

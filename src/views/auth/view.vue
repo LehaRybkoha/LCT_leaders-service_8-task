@@ -1,5 +1,5 @@
 <script setup>
-import { CommonButton } from '~/components/common'
+import { CommonButton, CommonInput } from '~/components/common'
 import { useStore } from '~/stores/stores.main'
 import { computed, ref } from 'vue'
 import { get_token, register } from '~/api/route.auth'
@@ -81,11 +81,11 @@ const isRegistration = ref(false)
       <h1 class="auth__title" v-else>Войти</h1>
       <label class="auth__label">
         <div class="auth__subtitle">Email:</div>
-        <input v-model="form.username" type="text" class="auth__input" />
+        <common-input v-model="form.username" class="auth__input" />
       </label>
       <label class="auth__label">
         <div class="auth__subtitle">Пароль:</div>
-        <input v-model="form.password" type="text" class="auth__input" />
+        <common-input v-model="form.password" class="auth__input" />
       </label>
       <!-- <label class="auth__label">
         <div class="auth__subtitle">Уовень пользователя:</div>
