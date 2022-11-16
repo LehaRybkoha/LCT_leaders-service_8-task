@@ -12,8 +12,9 @@ const form = ref({
   password: '',
 })
 
-const is_error_user = computed(() => form.value.username)
-const is_error_pass = computed(() => form.value.pass)
+const is_error_user = computed(() => !!form.value.username.length)
+const is_error_pass = computed(() => !!form.value.password.length)
+const isFetchError = ref(false)
 
 const makeFormData = () => {
   console.log(form.value.username)
@@ -21,10 +22,6 @@ const makeFormData = () => {
     username: form.value.username,
     password: form.value.password,
   }
-
-  // if (!is_error_user.username && !is_error_pass.password) {
-  //   return
-  // }
 
   const formBody = []
   if (!user_data.password) {
@@ -43,6 +40,7 @@ const registerUser = async () => {
   await register(username, password, 1)
 
   const d = await get_token(makeFormData())
+
   store.$state.access_token = d.access_token
   store.$state.user_id = d.user_id
   store.$state.level = d.level
@@ -59,7 +57,21 @@ const registerUser = async () => {
 }
 
 const loginUser = async () => {
-  const { access_token, user_id, level } = await get_token(makeFormData())
+  console.log(is_error_user.value, 'VAL')
+  if (!is_error_user.value || !is_error_pass.value) {
+    return
+  }
+
+  const data = await get_token(makeFormData())
+
+  if (!data) {
+    isFetchError.value = true
+  } else {
+    isFetchError.value = false
+  }
+
+  const { access_token, user_id, level } = data
+
   store.$state.access_token = access_token
   store.$state.user_id = user_id
   store.$state.level = level
@@ -90,6 +102,7 @@ const isRegistration = ref(false)
         <div class="auth__subtitle">Email:</div>
         <common-input
           v-model="form.username"
+          :is-errored="!is_error_user"
           :value="form.username"
           class="auth__input"
         />
@@ -98,14 +111,14 @@ const isRegistration = ref(false)
         <div class="auth__subtitle">Пароль:</div>
         <common-input
           v-model="form.password"
+          :is-errored="!is_error_user"
           :value="form.password"
           class="auth__input"
         />
       </label>
-      <!-- <label class="auth__label">
-        <div class="auth__subtitle">Уовень пользователя:</div>
-        <input type="text" class="auth__input" />
-      </label> -->
+      <p class="auth__error" v-if="isFetchError">
+        Пожалуйста, проверьте правильность введенных данных
+      </p>
       <common-button
         @click="registerUser"
         class="auth__button"
@@ -142,6 +155,10 @@ const isRegistration = ref(false)
       color: #000000;
       border: 1px solid $accent-purple;
     }
+  }
+  &__error {
+    color: red;
+    margin: 20px 0;
   }
   &__switch {
     margin-top: 50px;

@@ -7,6 +7,7 @@ defineProps({
     type: String,
     default: () => 'text',
   },
+  isErrored: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -17,7 +18,13 @@ const updateInput = (ev) => {
 </script>
 
 <template>
-  <input :type="type" class="input" @input="updateInput" :value="value" />
+  <input
+    :type="type"
+    :class="{ error: isErrored }"
+    class="input"
+    @input="updateInput"
+    :value="value"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -29,6 +36,9 @@ const updateInput = (ev) => {
   color: #000000;
   &:hover {
     border: 1px solid $accent-purple;
+  }
+  &.error {
+    border: 1px solid red;
   }
 }
 </style>
