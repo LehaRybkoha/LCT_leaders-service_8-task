@@ -23,7 +23,7 @@ const updateInput = (ev) => {
 <style lang="scss" scoped>
 .input {
   border: 1px solid $border-color;
-  padding: 10px 20px;
+  padding: 10px 20px 10px 10px;
   border-radius: 5px;
   transition: border 0.3s ease;
   color: #000000;

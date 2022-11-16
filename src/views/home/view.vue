@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { CommonButton } from '~/components/common'
+import { CommonButton, CommonInput, CommonLoader } from '~/components/common'
 import { useRoute, useRouter } from 'vue-router'
-import { upload_smeta, patch_smeta } from '~/api/route.home'
+import { patch_smeta, parse_smeta } from '~/api/route.home'
 import { ElementTable } from '~/components/elements'
 import { get_token, register } from '~/api/route.auth'
 
@@ -49,6 +49,13 @@ const submitItems = async () => {
 
 const patches = ref([])
 
+const step = ref(0)
+
+const form = ref({
+  name: '',
+  address: '',
+})
+
 const createPatch = (line_number, spgz_id) => {
   return {
     line_number,
@@ -63,6 +70,13 @@ const changeFiles = async (e) => {
     if (files.length) {
       isLoaded.value = true
 
+      categoriesData.value = await parse_smeta(
+        store.$state.access_token,
+        store.$state.user_id,
+        form.value.name,
+        form.value.address
+      )
+
       let file = files[0]
       let formData = new FormData()
 
@@ -70,7 +84,7 @@ const changeFiles = async (e) => {
 
       //TODO - make as route in api
       let data = await fetch(
-        `${SERVER_ENDPOINT}/smeta/parse_smeta/${store.$state.user_id}`,
+        `${SERVER_ENDPOINT}/smeta/save_smeta/${store.$state.user_id}`,
         {
           headers: {
             Authorization: 'Bearer ' + store.$state.access_token,
@@ -81,14 +95,15 @@ const changeFiles = async (e) => {
           token: store.$state.access_token,
         }
       )
-      categoriesData.value = await data.json()
 
       const headings = ['№', 'Наименование']
 
       table.value = createTable(
         headings,
         categoriesData.value.categories,
-        categoriesData.value.address
+        categoriesData.value.address,
+        categoriesData.value.name,
+        categoriesData.value.total_price
       )
       table_cat.value = createTable(
         headings,
@@ -157,10 +172,10 @@ const open_category = (category) => {
   const headings = [
     '№',
     'Код',
-    'Наименование',
+    'Название раздела',
     'Ед. изм.',
     'Кол-во',
-    'Цена',
+    'Цена, руб.',
     'Гипотезы',
   ]
 
@@ -177,6 +192,13 @@ const addMore = () => {
   isLoaded.value = false
 }
 
+const next = () => {
+  const { name, address } = form.value
+  if (name.length && address.length) {
+    step.value = 1
+  }
+}
+
 onMounted(async () => {
   console.log(makeFormData())
   if (!makeFormData()) {
@@ -191,7 +213,20 @@ onMounted(async () => {
 <template>
   <div class="home">
     <div class="home__content" v-if="!isLoaded">
-      <label class="home__label">
+      <div v-if="step === 0" class="home__content">
+        <div class="home__form form">
+          <div class="form__item">
+            <p class="form__title">Введите название:</p>
+            <common-input v-model="form.name" :value="form.name" />
+          </div>
+          <div class="form__item">
+            <p class="form__title">Введите адрес:</p>
+            <common-input v-model="form.address" :value="form.address" />
+          </div>
+          <common-button @click="next">Далее</common-button>
+        </div>
+      </div>
+      <label v-else class="home__label">
         <span>Загрузить смету</span>
         <input
           ref="uploadInput"
@@ -222,15 +257,25 @@ onMounted(async () => {
       class="table-lines"
       type="lines"
     />
-    <div v-else>Загрузка....</div>
+    <common-loader v-else />
   </div>
 </template>
 
 <style scoped lang="scss">
+.form {
+  &__title {
+    @include tg-16-medium;
+    margin-bottom: 8px;
+  }
+  &__item {
+    margin-bottom: 15px;
+  }
+}
 .home {
   min-height: calc(100% - 100px);
   background-color: #ffffff;
   border-radius: 10px;
+  position: relative;
   &__content {
     display: flex;
     align-items: center;

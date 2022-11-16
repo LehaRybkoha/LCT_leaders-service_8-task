@@ -104,9 +104,13 @@ onMounted(() => {
   <div class="table">
     <div class="table__header">
       <div class="table__title">
-        <h1 class="table__title-text">{{ title }}</h1>
-        <p class="table__address" v-if="table.address">
-          Адрес: {{ table.address }}
+        <h1 class="table__title-text">Название: {{ table.name }}</h1>
+        <p class="table__desc" v-if="table.address">
+          Адрес: <span class="table__desc_bold">{{ table.address }}</span>
+        </p>
+        <p class="table__desc" v-if="table.address">
+          Суммарная стоимость, руб.:
+          <span class="table__desc_bold">{{ table.total_price }}</span>
         </p>
       </div>
       <div class="table__buttons">
@@ -180,6 +184,18 @@ onMounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  &__title {
+    &-text {
+      margin-bottom: 10px;
+    }
+  }
+  &__desc {
+    @include tg-18-normal;
+    margin-bottom: 5px;
+    &_bold {
+      @include tg-18-bold;
+    }
   }
   &__item {
     display: grid;

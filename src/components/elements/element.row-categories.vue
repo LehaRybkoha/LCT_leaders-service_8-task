@@ -25,7 +25,7 @@ const props = defineProps({
     :class="{ table__item_even: idx % 2 === 0 }"
     @click="selectItem(item)"
   >
-    <span class="table__text">{{ idx }}</span>
+    <span class="table__text">{{ idx + 1 }}</span>
     <span class="table__text">{{ item.name }}</span>
   </li>
 </template>

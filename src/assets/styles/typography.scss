@@ -119,6 +119,10 @@
   // text content, legal pages as example
   @include create-font(18px, normal, 1.67em);
 }
+@mixin tg-18-bold {
+  // text content, legal pages as example
+  @include create-font(18px, bold, 1.67em);
+}
 
 @mixin tg-h6-bold-poppins {
   @include create-font(16px, bold, 18px, none, -0.5px, 'Poppins');
@@ -227,6 +231,14 @@
 
 @mixin tg-16-medium {
   @include create-font(16px, 500, 1.5em);
+}
+
+@mixin tg-16-bold {
+  @include create-font(16px, bold, 1.5em);
+}
+
+@mixin tg-20-bold {
+  @include create-font(20px, bold, 1.5em);
 }
 
 @mixin tg-12-medium-inter {

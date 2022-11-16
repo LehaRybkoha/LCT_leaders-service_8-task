@@ -2,5 +2,6 @@
 
 export { default as CommonButton } from './common.button.vue'
 export { default as CommonInput } from './common.input.vue'
+export { default as CommonLoader } from './common.loader.vue'
 export { default as CommonSelect } from './common.select.vue'
 export { default as CommonTextarea } from './common.textarea.vue'

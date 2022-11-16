@@ -29,13 +29,17 @@ watch(modelSpgz, (val) => {
 
 <template>
   <li class="table__item" :class="{ table__item_sure: item.spgz_defined }">
-    <span class="table__text">{{ idx }}</span>
+    <span class="table__text">{{ idx + 1 }}</span>
     <span class="table__text">{{ item.code }}</span>
     <span class="table__text">{{ item.name }}</span>
     <span class="table__text">{{ item.uom }}</span>
     <span class="table__text">{{ item.amount }}</span>
     <span class="table__text">{{ item.price }}</span>
-    <common-select />
+    <!-- <common-select v-if="idx == 0" /> -->
+    <div>
+      <common-button class="table__button">Выбрать гипотезу</common-button>
+    </div>
+
     <!-- <select v-model="modelSpgz" class="table__select" name="hypothesises">
       <option
         v-for="(option, idx) of item.hypothesises"
