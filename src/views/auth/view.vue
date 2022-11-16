@@ -22,9 +22,9 @@ const makeFormData = () => {
     password: form.value.password,
   }
 
-  if (!is_error_user.username && !is_error_pass.password) {
-    return
-  }
+  // if (!is_error_user.username && !is_error_pass.password) {
+  //   return
+  // }
 
   const formBody = []
   if (!user_data.password) {
