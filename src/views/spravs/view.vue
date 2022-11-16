@@ -76,22 +76,22 @@ const chooseCat = async (cat) => {
   const token = store.$state.access_token
   if (cat === 'ТСН') {
     const data = await getTsn(token)
-    const heading = ['Наименование', 'Шифр', 'Цена, руб.', 'Ед. изм.']
+    const heading = ['Наименование позиции', 'Шифр', 'Цена, руб.', 'Ед. изм.']
     table.value = createTable(heading, data)
   }
   if (cat === 'КПГЗ') {
     const data = await getKpgz(token)
-    const heading = ['Наименование']
+    const heading = ['Наименование позиции']
     table.value = createTable(heading, data)
   }
   if (cat === 'СПГЗ') {
     const data = await getSpgz(token)
-    const heading = ['ID', 'Наименование', 'Шифр']
+    const heading = ['ID', 'Наименование позиции', 'КПГЗ']
     table.value = createTable(heading, data)
   }
   if (cat === 'СН') {
     const data = await getSn(token)
-    const heading = ['Наименование', 'Шифр', 'Цена, руб.', 'Ед. изм.']
+    const heading = ['Наименование позиции', 'Шифр', 'Цена, руб.', 'Ед. изм.']
     table.value = createTable(heading, data)
   }
   router.replace('/setup')

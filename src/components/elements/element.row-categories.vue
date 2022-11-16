@@ -27,6 +27,9 @@ const props = defineProps({
   >
     <span class="table__text">{{ idx + 1 }}</span>
     <span class="table__text">{{ item.name }}</span>
+    <span class="table__text">{{ item.total_price }}</span>
+    <span class="table__text">{{ item.key_line.name }}</span>
+    <span class="table__text">{{ item.key_line.code }}</span>
   </li>
 </template>
 

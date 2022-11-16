@@ -101,7 +101,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="edit">
     <div class="edit__title">
-      <h1 class="edit__title-text">Изменить справочник</h1>
+      <h1 class="edit__title-text">Изменить позицию справочника</h1>
       <common-button @click="back">Вернутся к справочникам</common-button>
     </div>
     <form class="edit__form">
@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
         />
       </div>
       <div class="edit__label" v-if="item.code">
-        <p class="edit__subtitle">Код:</p>
+        <p class="edit__subtitle">Шифр:</p>
         <common-input v-model.number="form.code" :value="form.code" />
       </div>
       <div class="edit__label" v-if="item.price">

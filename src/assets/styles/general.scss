@@ -7,3 +7,10 @@ body {
   font-family: 'Manrope';
   overflow: hidden;
 }
+
+.app-modal-container {
+  max-height: 100vh;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}

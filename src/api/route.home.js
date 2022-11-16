@@ -1,10 +1,10 @@
 import { xfetch } from '~/core/fetch-system'
 import { SERVER_ENDPOINT } from './_global'
 
-export function patch_smeta_api(id, patches, token) {
+export function patch_smeta_api(id, patches, key_lines, token) {
   return xfetch.$post(
     `${SERVER_ENDPOINT}/smeta/patch_smeta/${id}`,
-    { patches: [...patches] },
+    { patches: [...patches], key_lines: key_lines },
     {
       token,
       is_file: true,
@@ -22,7 +22,7 @@ export function parse_smeta(token, id, name, address) {
   )
 }
 
-export const patch_smeta = async (id, patches, token) => {
+export const patch_smeta = async (id, patches, key_lines, token) => {
   const parseFile = (res) => {
     console.log('res', res)
     let filename = ''
@@ -44,7 +44,7 @@ export const patch_smeta = async (id, patches, token) => {
     a.remove()
   }
 
-  const res = await patch_smeta_api(id, patches, token)
+  const res = await patch_smeta_api(id, patches, key_lines, token)
 
   if (res.status !== 200) return
 

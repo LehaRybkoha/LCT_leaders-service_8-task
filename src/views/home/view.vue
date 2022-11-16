@@ -26,6 +26,7 @@ const title = ref('Категории')
 const table = ref(null)
 const chosen_cat = ref(null)
 const table_cat = ref(null)
+const key_lines = ref([])
 
 const setUser = (data) => {
   store.$state.username = data.username
@@ -43,6 +44,7 @@ const submitItems = async () => {
   await patch_smeta(
     store.$state.user_id,
     patches.value,
+    key_lines.value,
     store.$state.access_token
   )
 }
@@ -96,20 +98,24 @@ const changeFiles = async (e) => {
         }
       )
 
-      const headings = ['№', 'Наименование']
+      const headings = [
+        '№',
+        'Наименование раздела',
+        'Стоимость всего раздела, руб.',
+        'Ключевая работа',
+        '???',
+      ]
 
-      table.value = createTable(
-        headings,
-        categoriesData.value.categories,
-        categoriesData.value.address,
-        categoriesData.value.name,
-        categoriesData.value.total_price
-      )
-      table_cat.value = createTable(
-        headings,
-        categoriesData.value.categories,
-        categoriesData.value.address
-      )
+      console.log(categoriesData.value, 'DATA')
+
+      table.value = createTable(headings, categoriesData.value.categories, {
+        address: categoriesData.value.address,
+        name: categoriesData.value.name,
+        total_price: categoriesData.value.total_price,
+      })
+      table_cat.value = createTable(headings, categoriesData.value.categories, {
+        address: categoriesData.value.address,
+      })
 
       console.log(table.value.items)
 
@@ -124,6 +130,7 @@ const changeFiles = async (e) => {
             )
           }
         })
+        key_lines.value.push(item.key_line.line_number)
       })
     }
   } catch (e) {
@@ -171,15 +178,19 @@ const makeFormData = () => {
 const open_category = (category) => {
   const headings = [
     '№',
-    'Код',
-    'Название раздела',
-    'Ед. изм.',
+    '???',
+    'Наименование работы',
     'Кол-во',
+    'Ед. изм.',
     'Цена, руб.',
-    'Гипотезы',
+    'Выбранное СПГЗ',
   ]
 
-  chosen_cat.value = createTable(headings, category.lines)
+  console.log(category, 'acsca')
+
+  chosen_cat.value = createTable(headings, category.lines, {
+    key_line: category.key_line,
+  })
   title.value = category.name
 }
 
@@ -216,7 +227,7 @@ onMounted(async () => {
       <div v-if="step === 0" class="home__content">
         <div class="home__form form">
           <div class="form__item">
-            <p class="form__title">Введите название:</p>
+            <p class="form__title">Введите название сметы:</p>
             <common-input v-model="form.name" :value="form.name" />
           </div>
           <div class="form__item">
@@ -296,12 +307,20 @@ onMounted(async () => {
 }
 
 .table {
-  &-lines {
+  &-main {
     @include deep('.table__heading') {
-      grid-template-columns: 1fr 1fr 3fr 1fr 1fr 1fr 2fr;
+      grid-template-columns: 1fr 4fr 2fr 3fr 2fr;
     }
     @include deep('.table__item') {
-      grid-template-columns: 1fr 1fr 3fr 1fr 1fr 1fr 2fr;
+      grid-template-columns: 1fr 4fr 2fr 3fr 2fr;
+    }
+  }
+  &-lines {
+    @include deep('.table__heading') {
+      grid-template-columns: 1fr 1fr 3fr 1fr 1fr 1fr 2fr 2fr;
+    }
+    @include deep('.table__item') {
+      grid-template-columns: 1fr 1fr 3fr 1fr 1fr 1fr 2fr 2fr;
     }
   }
 }

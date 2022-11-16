@@ -10,9 +10,9 @@ import {
   ElementRowSpgz,
   ElementRowCategories,
 } from '~/components/elements'
-import { patch_smeta } from '~/api/route.home'
 import { useStore } from '~/stores/stores.main'
 import { SERVER_ENDPOINT } from '~/api/_global'
+import { ModalHypo } from '../modal'
 
 const store = useStore()
 
@@ -85,6 +85,33 @@ const computedRow = computed(() => {
   return rows[props.type]
 })
 
+const showModal = ref(false)
+
+const chosen_hypos = ref(null)
+const chosen_idx = ref(null)
+const chosen_line = ref(null)
+
+const choose = (hypo, idx, line_number) => {
+  chosen_hypos.value = null
+  chosen_hypos.idx = null
+  chosen_hypos.line_number = null
+  setTimeout(() => {
+    chosen_hypos.value = hypo
+    chosen_idx.value = idx
+    chosen_line.value = line_number
+  }, 0)
+  showModal.value = true
+}
+
+const chooseItem = (item) => {
+  changeItem(chosen_line.value, item.spgz_piece.id, chosen_idx.value)
+  // console.log('CHOOOSE', item, chosen_line.value, chosen_idx.value)
+}
+
+const findPatch = (item) => {
+  return patches.value.find((patch) => patch.line_number === item.line_number)
+}
+
 onMounted(() => {
   const table = [...props.table.items]
 
@@ -154,17 +181,41 @@ onMounted(() => {
         <component
           v-for="(item, idx) of table.items"
           class="table__item"
+          :is="computedRow"
           :item="item"
           :key="idx"
           :idx="idx"
+          :patche="findPatch(item)"
           @change-item="changeItem"
           @open_category="selectItem"
-          :is="computedRow"
+          @choose-hypo="choose"
         />
       </ul>
     </div>
+    <teleport to=".app-modal-container">
+      <vue-final-modal
+        v-model="showModal"
+        classes="f-modal-container"
+        content-class="modal-content"
+      >
+        <modal-hypo
+          v-if="chosen_hypos"
+          :items="chosen_hypos"
+          @change-item="chooseItem"
+          @close="showModal = false"
+        />
+      </vue-final-modal>
+    </teleport>
   </div>
 </template>
+
+<style>
+.f-modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
 
 <style lang="scss" scoped>
 .table {

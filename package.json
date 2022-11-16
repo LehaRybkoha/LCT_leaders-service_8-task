@@ -12,6 +12,7 @@
     "pinia": "latest",
     "vite-plugin-fonts": "^0.6.0",
     "vue": "latest",
+    "vue-final-modal": "3",
     "vue-router": "latest"
   },
   "devDependencies": {

@@ -1,6 +1,5 @@
 <script setup>
 import { ElementTable } from '~/components/elements'
-import { createTable } from '~/core/table'
 import { getAllUsers, getUserById, editUser } from '~/api/route.users'
 import { onMounted, ref, computed } from 'vue'
 import { useStore } from '~/stores/stores.main'
