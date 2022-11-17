@@ -38,12 +38,13 @@ const submitItems = async () => {
     store.$state.user_id,
     patches.value,
     key_lines.value,
+    by_hand.value,
     store.$state.access_token
   )
 }
 
 const patches = ref([])
-
+const by_hand = ref([])
 const step = ref(0)
 
 const form = ref({
@@ -161,6 +162,14 @@ const updatePatches = (items) => {
       }
     })
   })
+  patches.value.forEach((item) => {
+    if (typeof item.spgz_id === 'string') {
+      by_hand.value.push(item)
+    }
+  })
+  patches.value = patches.value.filter((item) => {
+    return typeof item.spgz_id !== 'string'
+  })
   back()
 }
 
@@ -177,7 +186,7 @@ const chooseKey = async (key, idx) => {
 
 const open_category = (category, idx) => {
   const headings = [
-    '№',
+    'Ключевая работа',
     'Шифр',
     'Наименование работы',
     'Кол-во',
@@ -185,8 +194,6 @@ const open_category = (category, idx) => {
     'Цена, руб.',
     'Соответствующее СПГЗ из справочника',
   ]
-
-  console.log(category, 'CREATION')
 
   chosen_cat.value = createTable(headings, category.lines, {
     name: 'Состав раздела',

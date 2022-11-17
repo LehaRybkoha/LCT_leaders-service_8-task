@@ -10,35 +10,48 @@ const props = defineProps({
   isByHand: {
     type: Boolean,
   },
+  spgzId: {
+    type: [Number, String],
+  },
   selectedItem: Object,
 })
 
-const emit = defineEmits(['change-item', 'change-init'])
+const emit = defineEmits(['change-item', 'change-init', 'clear-hand'])
 
 const is_opened = ref(false)
 
 const select = (item) => {
   emit('change-item', item)
-  console.log('select')
+
   is_opened.value = false
+}
+
+const openSelect = () => {
+  is_opened.value = !is_opened.value
+  if (typeof props.spgzId === 'string') {
+    return emit('clear-hand')
+  }
 }
 
 onMounted(() => {
   if (props.items.length) {
+    if (typeof props.spgzId === 'string') {
+      return
+    }
     emit('change-init', props.items[0])
   }
 })
 </script>
 
 <template>
-  <div class="select" v-if="selectedItem">
+  <div class="select">
     <div class="select__wrapper">
       <div
-        @click="is_opened = !is_opened"
+        @click="openSelect"
         class="select__input"
         :class="{ opened: is_opened }"
       >
-        <p class="select__filled" v-if="!isByHand">
+        <p class="select__filled" v-if="!isByHand && selectedItem">
           {{ selectedItem.spgz_piece.name }}
         </p>
         <p class="select__filled" v-else>не выбрано(ручной ввод)</p>

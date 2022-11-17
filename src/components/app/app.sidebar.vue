@@ -52,7 +52,7 @@ const return_navs = computed(() => {
 <template>
   <aside class="sidebar">
     <div class="sidebar__header">
-      <h1 class="sidebar__title">SMETAVERSE</h1>
+      <h1 class="sidebar__title">Smetaverse</h1>
     </div>
     <nav class="nav">
       <div class="nav__item" v-for="(nav, idx) of return_navs" :key="idx">
@@ -81,6 +81,7 @@ const return_navs = computed(() => {
   &__title {
     @include tg-h5-bold;
     text-align: center;
+    color: $accent-purple;
   }
 }
 

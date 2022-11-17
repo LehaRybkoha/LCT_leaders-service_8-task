@@ -6,6 +6,9 @@ const props = defineProps({
   items: {
     type: Array,
   },
+  spgz_id: {
+    type: [Number, String],
+  },
 })
 
 const form = ref({
@@ -18,6 +21,11 @@ const selected_item = ref(null)
 const emit = defineEmits(['change-item', 'close'])
 
 const submit = () => {
+  if (form.value.by_hand.length) {
+    emit('change-item-hand', selected_item.value, form.value.by_hand)
+    emit('close')
+    return
+  }
   emit('change-item', selected_item.value)
   emit('close')
 }
@@ -31,8 +39,18 @@ const change = (item) => {
   selected_item.value = item
 }
 
+const clearHand = () => {
+  form.value.by_hand = ''
+}
+
 const is_by_hand = computed(() => {
   return !!form.value.by_hand.length
+})
+
+onMounted(() => {
+  if (typeof props.spgz_id === 'string') {
+    form.value.by_hand = props.spgz_id
+  }
 })
 </script>
 
@@ -45,6 +63,8 @@ const is_by_hand = computed(() => {
           :items="items"
           :is-by-hand="is_by_hand"
           :selected-item="selected_item"
+          :spgz-id="spgz_id"
+          @clear-hand="clearHand"
           @change-item="change"
           @change-init="changeInit"
         />

@@ -33,6 +33,7 @@ const props = defineProps({
 })
 
 const patches = ref([])
+const by_hand = ref([])
 
 const emit = defineEmits([
   'open_category',
@@ -52,6 +53,12 @@ const createPatch = (line_number, spgz_id) => {
     line_number,
     spgz_id,
   }
+}
+
+const deletePatch = (line_number) => {
+  patches.value = patches.value.filter(
+    (item) => item.line_number !== line_number
+  )
 }
 
 const submitItems = () => {
@@ -99,15 +106,18 @@ const showModal = ref(false)
 const chosen_hypos = ref(null)
 const chosen_idx = ref(null)
 const chosen_line = ref(null)
+const spgz_id = ref(null)
 
-const choose = (hypo, idx, line_number) => {
+const choose = (hypo, idx, line_number, id) => {
   chosen_hypos.value = null
   chosen_hypos.idx = null
   chosen_hypos.line_number = null
+  spgz_id.value = null
   setTimeout(() => {
     chosen_hypos.value = hypo
     chosen_idx.value = idx
     chosen_line.value = line_number
+    spgz_id.value = id
   }, 0)
   showModal.value = true
 }
@@ -116,8 +126,14 @@ const chooseItem = (item) => {
   changeItem(chosen_line.value, item.spgz_piece.id, chosen_idx.value)
 }
 
+const chooseItemHand = (item, hand_info) => {
+  changeItem(chosen_line.value, hand_info, chosen_idx.value)
+}
+
 const findPatch = (item) => {
-  return patches.value.find((patch) => patch.line_number === item.line_number)
+  return patches.value.find((patch) => {
+    return patch.line_number === item.line_number
+  })
 }
 
 onMounted(() => {
@@ -176,13 +192,16 @@ onMounted(() => {
           >
         </div>
       </div>
+      <div class="table__block table__block_flex" v-if="type === 'lines'"></div>
       <div class="table__block table__block_flex" v-if="type === 'lines'">
-        <div class="table__color"></div>
-        <p class="table__info">- цвет выбранной ключевой работы</p>
-      </div>
-      <div class="table__block table__block_flex" v-if="type === 'lines'">
+        <div class="table__color">
+          <div class="table__checkbox">
+            <div class="table__checkbox-checked"></div>
+          </div>
+          выбранная ключевой работы
+        </div>
         <p class="table__info">
-          *** нажмите на раздел для выбора ключевой работы
+          - нажмите на раздел для выбора ключевой работы
         </p>
       </div>
     </div>
@@ -222,7 +241,9 @@ onMounted(() => {
         <modal-hypo
           v-if="chosen_hypos"
           :items="chosen_hypos"
+          :spgz_id="spgz_id"
           @change-item="chooseItem"
+          @change-item-hand="chooseItemHand"
           @close="showModal = false"
         />
       </vue-final-modal>
@@ -241,11 +262,11 @@ onMounted(() => {
 <style lang="scss" scoped>
 .table {
   &__block {
-    margin-bottom: 35px;
+    margin-bottom: 20px;
     &_flex {
       display: flex;
       align-items: center;
-      @include tg-18-bold;
+      @include tg-16-medium;
     }
     &_flex-btw {
       display: flex;
@@ -254,11 +275,32 @@ onMounted(() => {
     }
   }
   &__color {
-    width: 100px;
-    height: 30px;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #ffffff;
     background: #9d78eb;
     border-radius: 5px;
     margin-right: 15px;
+  }
+  &__checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 2px;
+    border: 1px solid #ffffff;
+    position: relative;
+    margin-right: 10px;
+    &-checked {
+      transition: opacity 0.3s ease;
+      opacity: 1;
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      background-color: #ffffff;
+      position: absolute;
+      left: 3px;
+      top: 3px;
+    }
   }
   &__buttons {
     display: flex;
@@ -277,6 +319,8 @@ onMounted(() => {
   &__title {
     &-text {
       margin-bottom: 10px;
+      font-size: 32px;
+      font-weight: bold;
     }
   }
   &__desc {

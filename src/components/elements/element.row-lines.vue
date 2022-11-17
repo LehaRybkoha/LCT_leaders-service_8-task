@@ -33,7 +33,8 @@ const choose = () => {
     'choose-hypo',
     props.item.hypothesises,
     props.idx,
-    props.item.line_number
+    props.item.line_number,
+    props.patche.spgz_id
   )
 }
 
@@ -47,9 +48,14 @@ const change = (id) => {
 
 const chosen_computed_hypo = computed(() => {
   if (props.item.hypothesises && props.patche) {
-    return props.item.hypothesises.find(
+    const item = props.item.hypothesises.find(
       (item) => item.spgz_piece.id === props.patche.spgz_id
     )
+    if (item) {
+      return item.spgz_piece.name
+    } else {
+      return props.patche.spgz_id
+    }
   }
 })
 
@@ -60,7 +66,6 @@ watch(modelSpgz, (val) => {
 
 <template>
   <li
-    v-if="chosen_computed_hypo"
     @click="chooseKey"
     class="table__item"
     :class="{
@@ -68,7 +73,11 @@ watch(modelSpgz, (val) => {
       table__item_key: keyLine.line_number === item.line_number,
     }"
   >
-    <span class="table__text">{{ idx + 1 }}</span>
+    <div>
+      <div class="table__checkbox">
+        <div class="table__checkbox-checked"></div>
+      </div>
+    </div>
     <span class="table__text">{{ item.code }}</span>
     <span class="table__text">{{ item.name }}</span>
     <span class="table__text">{{ item.amount }}</span>
@@ -77,7 +86,7 @@ watch(modelSpgz, (val) => {
     <span
       class="table__text"
       v-if="item.hypothesises.length && chosen_computed_hypo"
-      >{{ chosen_computed_hypo.spgz_piece.name }}</span
+      >{{ chosen_computed_hypo }}</span
     >
     <span class="table__text" v-else>Гипотеза не выбрана</span>
     <div class="table__wrapper">
@@ -117,12 +126,37 @@ watch(modelSpgz, (val) => {
         border: 1px solid #ffffff;
         box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.4);
       }
+      .table__checkbox {
+        border: 1px solid #ffffff;
+      }
+      .table__checkbox-checked {
+        background-color: #ffffff;
+        opacity: 1;
+      }
     }
   }
   &__select {
     height: 80px;
     border-radius: 4px;
     width: 100px;
+  }
+  &__checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 2px;
+    border: 1px solid $accent-purple;
+    position: relative;
+    &-checked {
+      transition: opacity 0.3s ease;
+      opacity: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      background-color: $accent-purple;
+      position: absolute;
+      left: 3px;
+      top: 3px;
+    }
   }
   &__text {
     @include tg-12-medium;
