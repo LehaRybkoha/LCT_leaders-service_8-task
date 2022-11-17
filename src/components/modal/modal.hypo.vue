@@ -1,6 +1,6 @@
 <script setup>
 import { CommonInput, CommonSelect, CommonButton } from '../common'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const props = defineProps({
   items: {
@@ -30,6 +30,10 @@ const changeInit = (item) => {
 const change = (item) => {
   selected_item.value = item
 }
+
+const is_by_hand = computed(() => {
+  return !!form.value.by_hand.length
+})
 </script>
 
 <template>
@@ -39,6 +43,7 @@ const change = (item) => {
         <h4 class="modal__subtitle">Выберите СПГЗ из выпадающего списка:</h4>
         <common-select
           :items="items"
+          :is-by-hand="is_by_hand"
           :selected-item="selected_item"
           @change-item="change"
           @change-init="changeInit"

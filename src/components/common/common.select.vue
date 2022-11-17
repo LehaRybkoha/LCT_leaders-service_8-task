@@ -7,6 +7,9 @@ const props = defineProps({
   items: {
     type: Array,
   },
+  isByHand: {
+    type: Boolean,
+  },
   selectedItem: Object,
 })
 
@@ -35,12 +38,12 @@ onMounted(() => {
         class="select__input"
         :class="{ opened: is_opened }"
       >
-        <!-- <div class="select__bg">
-          <button type="button" class="select__button">нажмите</button>
-        </div> -->
-        <p class="select__filled">{{ selectedItem.spgz_piece.name }}</p>
+        <p class="select__filled" v-if="!isByHand">
+          {{ selectedItem.spgz_piece.name }}
+        </p>
+        <p class="select__filled" v-else>не выбрано(ручной ввод)</p>
       </div>
-      <ul class="select__list" :class="{ opened: is_opened }">
+      <ul class="select__list" v-if="!isByHand" :class="{ opened: is_opened }">
         <li
           @click="select(item)"
           class="select__item"

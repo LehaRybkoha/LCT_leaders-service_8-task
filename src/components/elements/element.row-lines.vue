@@ -114,8 +114,8 @@ watch(modelSpgz, (val) => {
       background: #9d78eb;
       color: #ffffff;
       .table__button {
-        border: 1px solid #000000;
-        box-shadow: 0px 0px 10px rgb(0 0 0 / 40%);
+        border: 1px solid #ffffff;
+        box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.4);
       }
     }
   }
