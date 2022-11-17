@@ -12,6 +12,9 @@ const props = defineProps({
   patche: {
     type: Object,
   },
+  keyLine: {
+    type: Object,
+  },
 })
 
 const selectedSpgz = props.item.hypothesises.length
@@ -19,7 +22,7 @@ const selectedSpgz = props.item.hypothesises.length
   : ''
 const modelSpgz = ref(selectedSpgz)
 
-const emit = defineEmits(['change-item', 'choose-hypo'])
+const emit = defineEmits(['change-item', 'choose-hypo', 'choose-key'])
 
 const changeItem = (item) => {
   emit('change-item', item.line_number, modelSpgz.value, props.idx)
@@ -32,6 +35,10 @@ const choose = () => {
     props.idx,
     props.item.line_number
   )
+}
+
+const chooseKey = () => {
+  emit('choose-key', props.item)
 }
 
 const change = (id) => {
@@ -54,8 +61,12 @@ watch(modelSpgz, (val) => {
 <template>
   <li
     v-if="chosen_computed_hypo"
+    @click="chooseKey"
     class="table__item"
-    :class="{ table__item_sure: item.spgz_defined }"
+    :class="{
+      table__item_sure: item.spgz_defined,
+      table__item_key: keyLine.line_number === item.line_number,
+    }"
   >
     <span class="table__text">{{ idx + 1 }}</span>
     <span class="table__text">{{ item.code }}</span>
@@ -70,7 +81,10 @@ watch(modelSpgz, (val) => {
     >
     <span class="table__text" v-else>Гипотеза не выбрана</span>
     <div class="table__wrapper">
-      <common-button @click="choose" @change-item="change" class="table__button"
+      <common-button
+        @click.stop="choose"
+        @change-item="change"
+        class="table__button"
         >Изменить СПГЗ</common-button
       >
     </div>
@@ -95,6 +109,14 @@ watch(modelSpgz, (val) => {
     }
     &_even {
       background-color: rgba(0, 0, 0, 0.05);
+    }
+    &_key {
+      background: #9d78eb;
+      color: #ffffff;
+      .table__button {
+        border: 1px solid #000000;
+        box-shadow: 0px 0px 10px rgb(0 0 0 / 40%);
+      }
     }
   }
   &__select {

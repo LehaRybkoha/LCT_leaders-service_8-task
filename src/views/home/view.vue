@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick, toRaw } from 'vue'
 import { CommonButton, CommonInput, CommonLoader } from '~/components/common'
 import { useRoute, useRouter } from 'vue-router'
 import { patch_smeta, parse_smeta } from '~/api/route.home'
@@ -59,6 +59,9 @@ const createPatch = (line_number, spgz_id) => {
 }
 
 const clearPage = () => {
+  form.value.name = ''
+  form.value.address = ''
+  step.value = 0
   categoriesData.value = null
   table.value = null
   table_cat.value = null
@@ -161,7 +164,18 @@ const updatePatches = (items) => {
   back()
 }
 
-const open_category = (category) => {
+const chooseKey = async (key, idx) => {
+  table_cat.value.items[idx].key_line = key
+  chosen_cat.value.key_line = key
+
+  key_lines.value = []
+
+  table_cat.value.items.forEach((item) => {
+    key_lines.value.push(item.key_line.line_number)
+  })
+}
+
+const open_category = (category, idx) => {
   const headings = [
     '№',
     'Шифр',
@@ -172,13 +186,16 @@ const open_category = (category) => {
     'Соответствующее СПГЗ из справочника',
   ]
 
-  console.log(category, 'acsca')
+  console.log(category, 'CREATION')
 
   chosen_cat.value = createTable(headings, category.lines, {
     name: 'Состав раздела',
     key_line: category.key_line,
+    idx: idx,
   })
   title.value = category.name
+
+  router.push({ query: { row: 'line' } })
 }
 
 const back = () => {
@@ -244,6 +261,7 @@ onMounted(() => {
       @submit="chosen_cat = null"
       @update_patches="updatePatches"
       @save="submitItems"
+      @choose-key="chooseKey"
       :title="title"
       :table="chosen_cat"
       class="table-lines"

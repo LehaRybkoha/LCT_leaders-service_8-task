@@ -1,7 +1,7 @@
 export const createTable = (
   headings,
   items,
-  { address, name, total_price, key_line } = {}
+  { address, name, total_price, key_line, idx } = {}
 ) => {
   return {
     headings,
@@ -10,5 +10,6 @@ export const createTable = (
     name,
     total_price,
     key_line,
+    idx,
   }
 }

@@ -13,7 +13,10 @@ import {
 import { useStore } from '~/stores/stores.main'
 import { SERVER_ENDPOINT } from '~/api/_global'
 import { ModalHypo } from '../modal'
+import { useRouter, useRoute } from 'vue-router'
 
+const router = useRouter()
+const route = useRoute()
 const store = useStore()
 
 const props = defineProps({
@@ -40,8 +43,8 @@ const emit = defineEmits([
   'save',
 ])
 
-const selectItem = (item) => {
-  emit('open_category', item)
+const selectItem = (item, idx) => {
+  emit('open_category', item, idx)
 }
 
 const createPatch = (line_number, spgz_id) => {
@@ -59,16 +62,22 @@ const changeItem = (line_number, spgz_id, idx) => {
   patches.value[idx] = createPatch(line_number, spgz_id)
 }
 
+const chooseKey = (key) => {
+  emit('choose-key', key, props.table.idx)
+}
+
 const addMore = () => {
   emit('add-more')
 }
 
 const back = () => {
   emit('back')
+  router.push('/')
 }
 
 const save = () => {
   emit('save')
+  router.push('/')
 }
 
 const rows = {
@@ -105,7 +114,6 @@ const choose = (hypo, idx, line_number) => {
 
 const chooseItem = (item) => {
   changeItem(chosen_line.value, item.spgz_piece.id, chosen_idx.value)
-  // console.log('CHOOOSE', item, chosen_line.value, chosen_idx.value)
 }
 
 const findPatch = (item) => {
@@ -130,41 +138,52 @@ onMounted(() => {
 <template>
   <div class="table">
     <div class="table__header">
-      <div class="table__title">
-        <h1 class="table__title-text">{{ table.name }}</h1>
-        <p class="table__desc" v-if="table.address">
-          Адрес: <span class="table__desc_bold">{{ table.address }}</span>
-        </p>
-        <p class="table__desc" v-if="table.address">
-          Суммарная стоимость, руб.:
-          <span class="table__desc_bold">{{ table.total_price }}</span>
-        </p>
+      <div class="table__block table__block_flex-btw">
+        <div class="table__title">
+          <h1 class="table__title-text">{{ table.name }}</h1>
+          <p class="table__desc" v-if="table.address">
+            Адрес: <span class="table__desc_bold">{{ table.address }}</span>
+          </p>
+          <p class="table__desc" v-if="table.address">
+            Суммарная стоимость, руб.:
+            <span class="table__desc_bold">{{ table.total_price }}</span>
+          </p>
+        </div>
+        <div class="table__buttons">
+          <common-button
+            @click="back"
+            v-if="type === 'lines'"
+            class="table__button table__button_exit"
+            >Не сохранять и вернуться к разделам</common-button
+          >
+          <common-button
+            @click="submitItems"
+            v-if="type === 'lines'"
+            class="table__button"
+            >Сохранить и вернуться к разделам</common-button
+          >
+          <common-button
+            @click="addMore"
+            v-if="type === 'categories'"
+            class="table__button table__button_new"
+            >Загрузить новый файл</common-button
+          >
+          <common-button
+            @click="save"
+            v-if="type === 'categories'"
+            class="table__button"
+            >Сохранить смету</common-button
+          >
+        </div>
       </div>
-      <div class="table__buttons">
-        <common-button
-          @click="back"
-          v-if="type === 'lines'"
-          class="table__button table__button_exit"
-          >Не сохранять и вернуться к разделам</common-button
-        >
-        <common-button
-          @click="submitItems"
-          v-if="type === 'lines'"
-          class="table__button"
-          >Сохранить и вернуться к разделам</common-button
-        >
-        <common-button
-          @click="addMore"
-          v-if="type === 'categories'"
-          class="table__button table__button_new"
-          >Загрузить новый файл</common-button
-        >
-        <common-button
-          @click="save"
-          v-if="type === 'categories'"
-          class="table__button"
-          >Сохранить смету</common-button
-        >
+      <div class="table__block table__block_flex" v-if="type === 'lines'">
+        <div class="table__color"></div>
+        <p class="table__info">- цвет выбранной ключевой работы</p>
+      </div>
+      <div class="table__block table__block_flex" v-if="type === 'lines'">
+        <p class="table__info">
+          *** нажмите на раздел для выбора ключевой работы
+        </p>
       </div>
     </div>
     <div class="table__content">
@@ -185,9 +204,11 @@ onMounted(() => {
           :item="item"
           :key="idx"
           :idx="idx"
+          :key-line="table.key_line"
           :patche="findPatch(item)"
+          @choose-key="chooseKey"
           @change-item="changeItem"
-          @open_category="selectItem"
+          @open_category="selectItem(item, idx)"
           @choose-hypo="choose"
         />
       </ul>
@@ -219,6 +240,26 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .table {
+  &__block {
+    margin-bottom: 35px;
+    &_flex {
+      display: flex;
+      align-items: center;
+      @include tg-18-bold;
+    }
+    &_flex-btw {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+  &__color {
+    width: 100px;
+    height: 30px;
+    background: #9d78eb;
+    border-radius: 5px;
+    margin-right: 15px;
+  }
   &__buttons {
     display: flex;
   }
@@ -232,9 +273,6 @@ onMounted(() => {
     @include tg-h4-bold;
     padding: 30px 40px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
   &__title {
     &-text {
