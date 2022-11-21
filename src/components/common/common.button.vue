@@ -15,11 +15,7 @@ defineProps({
 </script>
 
 <template>
-  <button
-    class="el"
-    @click="$emit('click')"
-    :class="[`el-${variant}`, `el-${wrap}`]"
-  >
+  <button class="el" type="button" :class="[`el-${variant}`, `el-${wrap}`]">
     <slot />
   </button>
 </template>
@@ -44,6 +40,21 @@ defineProps({
   &-primary {
     background-color: $accent-purple;
     color: $primary-white;
+    box-shadow: none;
+    &:hover {
+      opacity: 0.5;
+    }
+    &:active {
+      box-shadow: 0px 2px 6px rgba(0, 220, 129, 0.3);
+    }
+    &:disabled {
+      background-color: rgb(255, 0, 0);
+    }
+  }
+  &-outlined {
+    background-color: $primary-white;
+    border: 1px solid $accent-purple;
+    color: #000000;
     box-shadow: none;
     &:hover {
       opacity: 0.5;

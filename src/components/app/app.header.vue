@@ -15,6 +15,10 @@ const logout = () => {
   store.$state.username = null
   store.$state.password = null
 
+  localStorage.removeItem('username')
+  localStorage.removeItem('level')
+  localStorage.removeItem('password')
+
   router.push('/auth')
 }
 
@@ -23,7 +27,7 @@ const name = computed(() => store.$state.username)
 
 <template>
   <header class="header">
-    <h1 class="header__title">Сервис для парсинга смет</h1>
+    <h1 class="header__title">Сервис для обработки смет</h1>
     <div class="user">
       <h3 class="user__name">{{ name }}</h3>
       <div @click="logout" class="user__logout">

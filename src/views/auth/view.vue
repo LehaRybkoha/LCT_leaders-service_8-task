@@ -1,5 +1,5 @@
 <script setup>
-import { CommonButton } from '~/components/common'
+import { CommonButton, CommonInput } from '~/components/common'
 import { useStore } from '~/stores/stores.main'
 import { computed, ref } from 'vue'
 import { get_token, register } from '~/api/route.auth'
@@ -7,22 +7,20 @@ import router from '~/router'
 
 const store = useStore()
 
-// await register('1232111', '123456789', 3)
-//   const { access_token, user_id } = await get_token(makeFormData())
-//   store.$state.access_token = access_token
-//   store.$state.user_id = user_id
-
 const form = ref({
   username: '',
   password: '',
 })
+
+const is_error_user = computed(() => !!form.value.username.length)
+const is_error_pass = computed(() => !!form.value.password.length)
+const isFetchError = ref(false)
 
 const makeFormData = () => {
   console.log(form.value.username)
   const user_data = {
     username: form.value.username,
     password: form.value.password,
-    level: 1,
   }
 
   const formBody = []
@@ -42,13 +40,16 @@ const registerUser = async () => {
   await register(username, password, 1)
 
   const d = await get_token(makeFormData())
+
   store.$state.access_token = d.access_token
   store.$state.user_id = d.user_id
+  store.$state.level = d.level
   store.$state.username = form.value.username
   store.$state.password = form.value.password
 
   localStorage.setItem('username', JSON.stringify(form.value.username))
   localStorage.setItem('password', JSON.stringify(form.value.password))
+  localStorage.setItem('level', JSON.stringify(d.level))
 
   if (store.$state.access_token && store.$state.user_id) {
     router.push('/')
@@ -56,14 +57,29 @@ const registerUser = async () => {
 }
 
 const loginUser = async () => {
-  const { access_token, user_id } = await get_token(makeFormData())
+  if (!is_error_user.value || !is_error_pass.value) {
+    return
+  }
+
+  const data = await get_token(makeFormData())
+
+  if (!data) {
+    isFetchError.value = true
+  } else {
+    isFetchError.value = false
+  }
+
+  const { access_token, user_id, level } = data
+
   store.$state.access_token = access_token
   store.$state.user_id = user_id
+  store.$state.level = level
   store.$state.username = form.value.username
   store.$state.password = form.value.password
 
   localStorage.setItem('username', JSON.stringify(form.value.username))
   localStorage.setItem('password', JSON.stringify(form.value.password))
+  localStorage.setItem('level', JSON.stringify(level))
 
   if (store.$state.access_token && store.$state.user_id) {
     router.push('/')
@@ -76,20 +92,32 @@ const isRegistration = ref(false)
 <template>
   <div class="auth">
     <div class="auth__content">
+      <p>SUPER USER: email - admin password - 12345678</p>
+      <p>Moderator: email - moderator password - 12345678</p>
+      <p>Simple user: email - user password - 12345678</p>
       <h1 class="auth__title" v-if="isRegistration">Регистрация</h1>
       <h1 class="auth__title" v-else>Войти</h1>
       <label class="auth__label">
-        <div class="auth__subtitle">Имя пользователя:</div>
-        <input v-model="form.username" type="text" class="auth__input" />
+        <div class="auth__subtitle">Email:</div>
+        <common-input
+          v-model="form.username"
+          :is-errored="!is_error_user"
+          :value="form.username"
+          class="auth__input"
+        />
       </label>
       <label class="auth__label">
         <div class="auth__subtitle">Пароль:</div>
-        <input v-model="form.password" type="text" class="auth__input" />
+        <common-input
+          v-model="form.password"
+          :is-errored="!is_error_user"
+          :value="form.password"
+          class="auth__input"
+        />
       </label>
-      <!-- <label class="auth__label">
-        <div class="auth__subtitle">Уовень пользователя:</div>
-        <input type="text" class="auth__input" />
-      </label> -->
+      <p class="auth__error" v-if="isFetchError">
+        Пожалуйста, проверьте правильность введенных данных
+      </p>
       <common-button
         @click="registerUser"
         class="auth__button"
@@ -127,6 +155,10 @@ const isRegistration = ref(false)
       border: 1px solid $accent-purple;
     }
   }
+  &__error {
+    color: red;
+    margin: 20px 0;
+  }
   &__switch {
     margin-top: 50px;
     display: flex;
@@ -143,14 +175,14 @@ const isRegistration = ref(false)
     margin-bottom: 10px;
   }
   &__content {
-    border: 1px solid #b2b2b2;
+    border: 1px solid $border-color;
     border-radius: 5px;
     padding: 20px;
     width: 500px;
     flex-direction: column;
   }
   &__input {
-    border: 1px solid #b2b2b2;
+    border: 1px solid $border-color;
     border-radius: 5px;
     display: block;
     padding: 10px;
